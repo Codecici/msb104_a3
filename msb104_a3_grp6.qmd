@@ -24,7 +24,9 @@ execute:
 ---
 
 # Introduksjon
+
 Denne oppgaven har som mål å utforske alternative funksjonelle former og bruke panelestimater for å analysere forholdet mellom regional utvikling og inntektsulikhet i Belgia, Bulgaria, Nederland og Norge.
+
 ```{r}
 # Pakker
 library(dplyr)
@@ -41,11 +43,15 @@ library(fixest)
 library(plm)
 library(modelsummary)
 ```
+
 # Del A: Testing av utviklingseffekter på tvers av delmengder
+
 ## Delmengdeanalyse
+
 Resultatene fra del B i oppgave 2 viser at utdanning er den mest signifikante faktoren i den multiple lineære regresjonsmodellen. Derfor velger jeg å bruke utdanning som grunnlag for å teste delutvalg (subset) i denne analysen.
 
 ### Datainnsamling
+
 ```{r}
 # Laster ned utdanningsdatasettet fra Eurostat
 utdanning <- get_eurostat("edat_lfse_04", time_format = "num") 
@@ -76,6 +82,7 @@ utdanning_2017_trenivå <- utdanning_2017 %>%
     `Høy_utdanning`     = High
   )
 ```
+
 ```{r}
 # leser excel data_2017_b som brukt i assignment 2 del b
 data_2017_b <- read_excel("/Users/liang/Desktop/msb104/msb104_a3/data_2017_b.xlsx", sheet = "data_2017_b")
@@ -86,21 +93,25 @@ data_2017 <- data_2017_b %>%
 ```
 
 ### Estimering av effekten av tre utdanningsnivåer på ulikhet
+
 ```{r}
 # Low education subset
 model_lav  <- lm(Gini_weighted ~ change_GDPC_pct + vei_tetthet + andelen_over65 + Lav_utdanning, data = data_2017)
 summary(model_lav)
 ```
+
 ```{r}
 # Medium education subset
 model_middels  <- lm(Gini_weighted ~ change_GDPC_pct + vei_tetthet + andelen_over65 + Middels_utdanning, data = data_2017)
 summary(model_middels)
 ```
+
 ```{r}
 # High education subset
 model_hoy  <- lm(Gini_weighted ~ change_GDPC_pct + vei_tetthet + andelen_over65 + Høy_utdanning, data = data_2017)
 summary(model_hoy)
 ```
+
 ```{r}
 #| label: tbl-subset
 #| tbl-cap: "Resultater av delmengderegresjon på tvers av utdanningsgrupper"
@@ -118,30 +129,31 @@ modelsummary(
 ```
 
 ## Diskusjon om delmengdeanalyse: (200–400 ord)
-Som vist i tabell @tbl-subset undersøker delmengdeanalysen om sammenhengen mellom regional økonomisk utvikling og inntektsulikhet varierer på tvers av regioner med ulike utdanningsprofiler. Når de andre tre variablene holdes konstante, viser resultatene at ulike utdanningsnivåer som lavt, middels og høyt påvirker inntektsulikheten på forskjellige måter.
-I regioner med lav utdanning er utviklingseffekten (change_GDPC_pct) positiv, men ikke signifikant (omtrent estimate 0.003 og p 0.567), noe som tyder på at økonomisk vekst alene ikke reduserer ulikheten. Lav utdanning har en negativ og signifikant effekt (omtrent estimate −0.0046 og p 0.046), som betyr at økt utdanningsnivå i lavt utdannede regioner bidrar til å redusere forskjeller. Her spiller utdanning en sterkere rolle enn både økonomisk utvikling og infrastruktur.
-I regioner med middels utdanning er utviklingseffekten svak positiv (omtrent p 0.098), mens middels utdanning har en negativ, men ikke signifikant effekt (p 0.124). Veitetthet viser derimot en tydelig negativ og signifikant effekt (p = 0.043). Dette indikerer at infrastruktur har større forklaringskraft enn utdanning i disse områdene, og at bedre tilkobling mellom regioner kan bidra mer effektivt til å redusere inntektsulikhet enn økt utdanningsnivå.
-I regioner med høy utdanning er både økonomisk utvikling (p = 0.057) og høy utdanning (p = 0.0097) positivt og signifikant knyttet til ulikhet. Veitetthet har derimot en negativ og signifikant effekt (estimate −0.0009, p 0.039), noe som tyder på at bedre infrastruktur kan bidra til å dempe forskjeller som ellers øker med økonomisk vekst og høyt utdanningsnivå. Dette antyder at når utdanningsnivået allerede er høyt, fører videre vekst og utdanning til at inntektsforskjellene øker, sannsynligvis fordi gevinsten av utviklingen tilfaller de mest kvalifiserte gruppene.
-Samlet viser analysen at utdanning reduserer ulikhet i lavt utdannede regioner, men kan forsterke forskjeller i høyt utdannede regioner, mens infrastruktur fremstår som en mer stabil og gjennomgående utjevnende faktor.
+
+Som vist i tabell @tbl-subset undersøker delmengdeanalysen om sammenhengen mellom regional økonomisk utvikling og inntektsulikhet varierer på tvers av regioner med ulike utdanningsprofiler. Når de andre tre variablene holdes konstante, viser resultatene at ulike utdanningsnivåer som lavt, middels og høyt påvirker inntektsulikheten på forskjellige måter. I regioner med lav utdanning er utviklingseffekten (change_GDPC_pct) positiv, men ikke signifikant (omtrent estimate 0.003 og p 0.567), noe som tyder på at økonomisk vekst alene ikke reduserer ulikheten. Lav utdanning har en negativ og signifikant effekt (omtrent estimate −0.0046 og p 0.046), som betyr at økt utdanningsnivå i lavt utdannede regioner bidrar til å redusere forskjeller. Her spiller utdanning en sterkere rolle enn både økonomisk utvikling og infrastruktur. I regioner med middels utdanning er utviklingseffekten svak positiv (omtrent p 0.098), mens middels utdanning har en negativ, men ikke signifikant effekt (p 0.124). Veitetthet viser derimot en tydelig negativ og signifikant effekt (p = 0.043). Dette indikerer at infrastruktur har større forklaringskraft enn utdanning i disse områdene, og at bedre tilkobling mellom regioner kan bidra mer effektivt til å redusere inntektsulikhet enn økt utdanningsnivå. I regioner med høy utdanning er både økonomisk utvikling (p = 0.057) og høy utdanning (p = 0.0097) positivt og signifikant knyttet til ulikhet. Veitetthet har derimot en negativ og signifikant effekt (estimate −0.0009, p 0.039), noe som tyder på at bedre infrastruktur kan bidra til å dempe forskjeller som ellers øker med økonomisk vekst og høyt utdanningsnivå. Dette antyder at når utdanningsnivået allerede er høyt, fører videre vekst og utdanning til at inntektsforskjellene øker, sannsynligvis fordi gevinsten av utviklingen tilfaller de mest kvalifiserte gruppene. Samlet viser analysen at utdanning reduserer ulikhet i lavt utdannede regioner, men kan forsterke forskjeller i høyt utdannede regioner, mens infrastruktur fremstår som en mer stabil og gjennomgående utjevnende faktor.
 
 # Del B: Utforsking av alternative funksjonsformer
 
 ## Utforsk alternative funksjonsformer
+
 ```{r}
 # Log-lineær modell
 model_log <- lm(Gini_weighted ~ log(change_GDPC_pct + 1) + vei_tetthet + andelen_over65 + `Høy_utdanning`, data = data_2017)
 summary(model_log)
 ```
+
 ```{r}
 # Kvadratisk modell
 model_kvad <- lm(Gini_weighted ~ change_GDPC_pct + I(change_GDPC_pct^2) + vei_tetthet + andelen_over65 + `Høy_utdanning`, data = data_2017)
 summary(model_kvad)
 ```
+
 ```{r}
 # Kubisk modell
 model_kub <- lm(Gini_weighted ~ change_GDPC_pct + I(change_GDPC_pct^2) + I(change_GDPC_pct^3) + vei_tetthet + andelen_over65 + `Høy_utdanning`, data = data_2017)
 summary(model_kub)
 ```
+
 ```{r}
 #| label: tbl-funksjonsformer
 #| tbl-cap: "logaritmiske, kvadratiske, kubiske"
@@ -159,10 +171,11 @@ modelsummary(
 ```
 
 ### Begrunn valgene mine
-Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell @tbl-funksjonsformer viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes teoretisk av Kuznets-hypotesen @kuznets2019economic, der ulikheten først øker og deretter reduseres med økonomisk utvikling.
-Resultatene støttes av artikkelen @LESSMANN2017110, som finner en ikke-lineær sammenheng mellom økonomisk utvikling og regional ulikhet. De viser at ulikheten først øker og deretter reduseres etter hvert som økonomien utvikler seg, noe som tilsvarer den klassiske Kuznets-kurven @kuznets2019economic.
+
+Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell @tbl-funksjonsformer viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes teoretisk av Kuznets-hypotesen @kuznets2019economic, der ulikheten først øker og deretter reduseres med økonomisk utvikling. Resultatene støttes av artikkelen @LESSMANN2017110, om fant at ulikhet først øker og deretter avtar med økonomisk utvikling, og viser en N-formet sammenheng, noe som tilsvarer den klassiske Kuznets-kurven @kuznets2019economic.
 
 ## Visualisering
+
 ```{r}
 # Lager et nytt datasett for visualisering av modellene
 visualisering_data <- data.frame(
@@ -202,18 +215,17 @@ visualisering <- data_2017 %>%
   )
 visualisering
 ```
+
 @fig-log-kvadratisk viser sammenhengen mellom økonomisk utvikling og inntektsulikhet, der x-aksen viser endringen i BNP per innbygger (%) og y-aksen viser Gini-koeffisienten. Den log-lineære modellen (blå linje) viser en jevn og gradvis økning i ulikhet når BNP-veksten stiger. Den kvadratiske modellen (rød stiplet linje) har en tydelig buet form der ulikheten først øker og deretter flater ut eller synker svakt ved høyere vekstnivåer.
 
 ## Tolkning av resultater (opp til 400 ord)
-Resultatene fra @tbl-funksjonsformer viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528).
-I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer. 
-Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som en svak Kuznets-lignende kurve @kuznets2019economic, der ulikheten først øker og senere flater ut.
-Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt. 
-Samlet sett peker resultatene mot en ikke-lineær utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Dette samsvarer med litteratur som fremhever ikke-lineære utviklingsbaner, slik som @kuznets2019economic og @LESSMANN2017110. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.
+
+Resultatene fra @tbl-funksjonsformer viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528). I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer. Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som en svak Kuznets-lignende kurve @kuznets2019economic, der ulikheten først øker og senere flater ut. Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt. Samlet sett peker resultatene mot en ikke-lineære utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.
 
 # Del C: Heteroskedastisitetstesting og kausalitetsdiskusjon
 
 ## Heteroskedastisitetstesting
+
 ```{r}
 # Breusch–Pagan-test
 bp_log  <- bptest(model_log)
@@ -245,21 +257,19 @@ hetero_test
 ```
 
 ### Tolk og diskuter resultatene og implikasjonene (opptil 200 ord).
+
 Resultatene fra @tbl-heteroskedastisitet viser at Breusch–Pagan-, White- og Score-testene ikke finner noen tegn til heteroskedastisitet i noen av modellene. For den log-lineære modellen er p-verdiene 0.456 (BP), 0.185 (White) og 0.205 (Score). Den kvadratiske modellen har tilsvarende høye p-verdier (0.467, 0.189 og 0.282), og selv for den kubiske modellen ligger alle p-verdiene godt over 0.05 (0.450, 0.096 og 0.166). Siden alle testene gir p-verdier over 0.05, kan ikke nullhypotesen om homoskedastisitet forkastes. Dette betyr at variansen i residualene er stabil, og at modellen ikke lider av heteroskedastisitet. Det er derfor ikke behov for å benytte robuste standardfeil, ettersom heteroskedastisitet ikke utgjør et problem i disse modellene.
 
 ## Kausalitetsdiskusjon (200–400 ord)
-Selv om denne studien viser en statistisk sammenheng mellom økonomisk utvikling og inntektsulikhet, der utdanning, transport og demografi inngår som forklaringsvariabler, kan resultatene ikke tolkes som kausale.
-Det finnes flere grunner til dette. For det første kan det være omvendt kausalitet. Økonomisk vekst kan påvirke ulikhet, men ulikhet kan også påvirke vekst. For eksempel kan regioner med høy ulikhet ha lavere investeringer i utdanning, dårligere transportforhold og en skjev befolkningssammensetning, noe som kan redusere økonomisk utvikling. I dette tilfellet viser modellen en toveis sammenheng snarere enn en klar årsakssammenheng.
-For det andre kan modellen mangle viktige variabler. Selv om analysen inkluderer utdanning, veitetthet og andelen eldre, noe som gir modellen en viss forklaringskraft, mangler det fortsatt flere andre sentrale faktorer som blant annet institusjonskvalitet, arbeidsmarkedsforhold eller fordeling av kapital. Dersom slike faktorer påvirker både økonomisk vekst og ulikhet, kan resultatene bli skjeve på grunn av utelatte variabler.
-Et annet problem er samtidig påvirkning. Økonomisk vekst og inntektsulikhet kan påvirke hverandre i samme periode, og ikke bare i én retning. Når begge variablene endrer seg samtidig og påvirker hverandre, blir det vanskelig å skille hva som er årsak og hva som er virkning.
-For å identifisere kausale sammenhenger bedre, trengs mer presise analyser som kan kontrollere for regionale forhold som ikke endrer seg over tid, og dermed redusere problemet med utelatte variabler. Det er også mulig å bruke instrumentvariabler eller tidsforsinkede variabler for å redusere omvendt kausalitet og samtidig påvirkning. Flere kontrollvariabler eller lengre tidsserier kan i tillegg gjøre kausalanalysen mer pålitelig.
-Oppsummert viser analysen bare at det finnes en sammenheng mellom variablene, men ikke hva som er årsaken. For å si noe mer sikkert om årsakssammenhenger, trengs det mer grundige analyser som kan håndtere at viktige forhold kan mangle i modellen, eller at variablene kan påvirke hverandre.
+
+Selv om denne studien viser en statistisk sammenheng mellom økonomisk utvikling og inntektsulikhet, der utdanning, transport og demografi inngår som forklaringsvariabler, kan resultatene ikke tolkes som kausale. Det finnes flere grunner til dette. For det første kan det være omvendt kausalitet. Økonomisk vekst kan påvirke ulikhet, men ulikhet kan også påvirke vekst. For eksempel kan regioner med høy ulikhet ha lavere investeringer i utdanning, dårligere transportforhold og en skjev befolkningssammensetning, noe som kan redusere økonomisk utvikling. I dette tilfellet viser modellen en toveis sammenheng snarere enn en klar årsakssammenheng. For det andre kan modellen mangle viktige variabler. Selv om analysen inkluderer utdanning, veitetthet og andelen eldre, noe som gir modellen en viss forklaringskraft, mangler det fortsatt flere andre sentrale faktorer som blant annet institusjonskvalitet, arbeidsmarkedsforhold eller fordeling av kapital. Dersom slike faktorer påvirker både økonomisk vekst og ulikhet, kan resultatene bli skjeve på grunn av utelatte variabler. Et annet problem er samtidig påvirkning. Økonomisk vekst og inntektsulikhet kan påvirke hverandre i samme periode, og ikke bare i én retning. Når begge variablene endrer seg samtidig og påvirker hverandre, blir det vanskelig å skille hva som er årsak og hva som er virkning. For å identifisere kausale sammenhenger bedre, trengs mer presise analyser som kan kontrollere for regionale forhold som ikke endrer seg over tid, og dermed redusere problemet med utelatte variabler. Det er også mulig å bruke instrumentvariabler eller tidsforsinkede variabler for å redusere omvendt kausalitet og samtidig påvirkning. Flere kontrollvariabler eller lengre tidsserier kan i tillegg gjøre kausalanalysen mer pålitelig. Oppsummert viser analysen bare at det finnes en sammenheng mellom variablene, men ikke hva som er årsaken. For å si noe mer sikkert om årsakssammenhenger, trengs det mer grundige analyser som kan håndtere at viktige forhold kan mangle i modellen, eller at variablene kan påvirke hverandre.
 
 # Del D: Panel
 
 ## Panelestimering
 
 ### Datainnsamling for Panelestimering
+
 ```{r}
 # Laster ned og filtrerer datasett for perioden 2008–2022
 # Nedlasting av BNP 2008–2022
@@ -311,6 +321,7 @@ gdp_pop_panel <- gdp_panel %>%
     .groups = "drop"
   )
 ```
+
 ```{r}
 # høy utdanning 2008–2022
 edu_panel <- utdanning %>%
@@ -343,6 +354,7 @@ pop_panel <- get_eurostat("demo_r_pjangrp3", time_format="num") %>%
   rename(NUTS2=geo)%>%
   select(NUTS2, TIME_PERIOD, andelen_over65)
 ```
+
 ```{r}
 # Kobler sammen datasett
 panel_df <- gdp_pop_panel %>%
@@ -351,6 +363,7 @@ panel_df <- gdp_pop_panel %>%
 ```
 
 ### Panelmodeller (Fire FE-spesifikasjoner)
+
 ```{r}
 # Oppretter landkode fra NUTS2 og aggregerer data til land × år
 panel_country <- panel_df %>%
@@ -375,6 +388,7 @@ fe_country <- plm(
 )
 summary(fe_country)
 ```
+
 ```{r}
 # Konverterer datasettet til et panelobjekt med NUTS2 som enhets-ID og TIME_PERIOD som tidsvariabel
 panel_df <- pdata.frame(panel_df, index = c("NUTS2", "TIME_PERIOD"))
@@ -390,6 +404,7 @@ fe_year <- plm(
 )
 summary(fe_year)
 ```
+
 ```{r}
 # Modell 3: Faste effekter på NUTS2-nivå (region FE)
 fe_region <- plm(
@@ -400,6 +415,7 @@ fe_region <- plm(
 )
 summary(fe_region)
 ```
+
 ```{r}
 # Modell 4: Toveis faste effekter (NUTS2 + år)
 fe_twoway <- plm(
@@ -410,6 +426,7 @@ fe_twoway <- plm(
 )
 summary(fe_twoway)
 ```
+
 ```{r}
 #| label: tbl-panel
 #| tbl-cap: "Sammenligning av panelmodeller"
@@ -427,45 +444,14 @@ modelsummary(
 ```
 
 ## Panelestimeringsanalyse: (opptil 400 ord)
-I panelmodellen inkluderte jeg ikke transportinfrastruktur (veitetthet). Selv om variabelen endrer seg over tid, er endringen så liten at den i praksis er tidsinvariant. En faste-effekt-modell estimerer kun basert på tidsvariasjon innen samme region, og tidsinvariante variabler blir fullstendig absorbert av regionsfaste effekter. Dermed kan ikke veitetthet estimeres på en korrekt måte og er utelatt fra panelanalysen. I stedet inkluderes kun høyere utdanning og andelen av befolkningen over 65 år.
-Som vist i @tbl-panel har alle fire modellene svært svak forklaringskraft, med R²-verdier på henholdsvis 0.004, 0.022, 0.006 og 0.009, og de justerte R²-verdiene er negative. Dette indikerer at modellene i liten grad klarer å forklare utviklingen i regional inntektsulikhet over tid.  
-Videre er koeffisientene for de inkluderte variablene svært små og gjennomgående ikke-signifikante. For utdanningsnivået er p-verdiene i alle modellene klart over 0.1, blant annet p 0.41 (region FE), 0.86 (year FE), 0.51 (two-way FE) og 0.62 (country FE). Andelen eldre har også p-verdier over 0.1 i de fleste modellene, som p 0.59 (region FE)), 0.45 (two-way FE) og 0.78 (country FE), med unntak av year FE-modellen der variabelen er svakt signifikant (p 0.0889). Dette viser at disse variablene endrer seg svært lite over tid innen hver region, og derfor ikke klarer å forklare variasjonen i Gini-koeffisienten.
-Samlet sett viser panelresultatene at de tidsmessige endringene innen regionene er begrenset. Både Gini, utdanningsnivå og aldersstruktur er forholdsvis stabile, noe som gjør det utfordrende for modellen å identifisere tydelige tidseffekter. Dette samsvarer med de lave R²-verdiene og manglende signifikans i @tbl-panel, og tyder på at regionale ulikheter i større grad skyldes langsiktige strukturelle forskjeller enn kortsiktige endringer.
+
+I panelmodellen inkluderte jeg ikke transportinfrastruktur (veitetthet). Selv om variabelen endrer seg over tid, er endringen så liten at den i praksis er tidsinvariant. En faste-effekt-modell estimerer kun basert på tidsvariasjon innen samme region, og tidsinvariante variabler blir fullstendig absorbert av regionsfaste effekter. Dermed kan ikke veitetthet estimeres på en korrekt måte og er utelatt fra panelanalysen. I stedet inkluderes kun høyere utdanning og andelen av befolkningen over 65 år. Som vist i @tbl-panel har alle fire modellene svært svak forklaringskraft, med R²-verdier på henholdsvis 0.004, 0.022, 0.006 og 0.009, og de justerte R²-verdiene er negative. Dette indikerer at modellene i liten grad klarer å forklare utviklingen i regional inntektsulikhet over tid.\
+Videre er koeffisientene for de inkluderte variablene svært små og gjennomgående ikke-signifikante. For utdanningsnivået er p-verdiene i alle modellene klart over 0.1, blant annet p 0.41 (region FE), 0.86 (year FE), 0.51 (two-way FE) og 0.62 (country FE). Andelen eldre har også p-verdier over 0.1 i de fleste modellene, som p 0.59 (region FE)), 0.45 (two-way FE) og 0.78 (country FE), med unntak av year FE-modellen der variabelen er svakt signifikant (p 0.0889). Dette viser at disse variablene endrer seg svært lite over tid innen hver region, og derfor ikke klarer å forklare variasjonen i Gini-koeffisienten. Samlet sett viser panelresultatene at de tidsmessige endringene innen regionene er begrenset. Både Gini, utdanningsnivå og aldersstruktur er forholdsvis stabile, noe som gjør det utfordrende for modellen å identifisere tydelige tidseffekter. Dette samsvarer med de lave R²-verdiene og manglende signifikans i @tbl-panel, og tyder på at regionale ulikheter i større grad skyldes langsiktige strukturelle forskjeller enn kortsiktige endringer.
 
 ## Panelestimeringsdiskusjon: (opptil 400 ord)
-Basert på de samlede panelestimatene fremstår modellens forklaringskraft som svak. Dette henger i stor grad sammen med den begrensede tidsvariasjonen i variablene samt egenskapene ved FE modeller, som benytter endringer over tid innen samme region til å identifisere effekter.
-Transportinfrastruktur (veitetthet) er også en relevant forklaringsfaktor, men ble ikke inkludert i panelmodellen på grunn av modellens metodiske begrensninger. Veitetthet er i praksis en tidsinvariant variabel i analyseperioden og vil derfor bli fullstendig absorbert av regionsfaste effekter. Dermed kan den ikke estimeres i en faste-effekt-modell. Dette innebærer at en potensielt viktig forklaringsvariabel faller bort, noe som ytterligere begrenser modellens totale forklaringskraft.
-@tbl-panel viser tydelig at modellens forklaringskraft er svært svak. I en modell med faste effekter er identifikasjonen basert på endringer over tid innenfor samme region. I dette datasettet endrer imidlertid Gini, utdanningsnivå og andelen eldre over 65 år seg svært lite i perioden 2008–2022. Fordi variablene nesten ikke varierer, har modellen svært begrenset tidsvariasjon å utnytte. Derfor blir koeffisientene meget små, for eksempel er den laveste koeffisienten for utdanning –0.00036 og for andelen eldre –0.00055, mens den laveste R²-verdien er helt nede på 0.004. Dette viser at modellen i liten grad klarer å forklare endringer over tid.
-I toveis faste effekter (Two-way FE) blir mønsteret enda tydeligere. Denne modellen kontrollerer både for regionspesifikke forskjeller og årsspesifikke sjokk, noe som gjør at enda mindre tidsvariasjon står igjen til å forklare endringer i ulikhet. I toveis faste effekter (Two-way FE) er p-verdiene høye: 0.5141 for utdanningsnivå og 0.4457 for andelen eldre. Begge ligger langt over 0.1, noe som viser at disse variablene ikke har noen tydelig statistisk effekt innen regionene over tid.
-Samlet sett viser dette at regionale ulikheter i større grad skyldes stabile og langsiktige strukturelle forhold, og at kortsiktige endringer i utdanning, demografi og økonomisk utvikling spiller en svært begrenset rolle for utviklingen i Gini-koeffisienten i denne perioden.
+
+Basert på de samlede panelestimatene fremstår modellens forklaringskraft som svak. Dette henger i stor grad sammen med den begrensede tidsvariasjonen i variablene samt egenskapene ved FE modeller, som benytter endringer over tid innen samme region til å identifisere effekter. Transportinfrastruktur (veitetthet) er også en relevant forklaringsfaktor, men ble ikke inkludert i panelmodellen på grunn av modellens metodiske begrensninger. Veitetthet er i praksis en tidsinvariant variabel i analyseperioden og vil derfor bli fullstendig absorbert av regionsfaste effekter. Dermed kan den ikke estimeres i en faste-effekt-modell. Dette innebærer at en potensielt viktig forklaringsvariabel faller bort, noe som ytterligere begrenser modellens totale forklaringskraft. @tbl-panel viser tydelig at modellens forklaringskraft er svært svak. I en modell med faste effekter er identifikasjonen basert på endringer over tid innenfor samme region. I dette datasettet endrer imidlertid Gini, utdanningsnivå og andelen eldre over 65 år seg svært lite i perioden 2008–2022. Fordi variablene nesten ikke varierer, har modellen svært begrenset tidsvariasjon å utnytte. Derfor blir koeffisientene meget små, for eksempel er den laveste koeffisienten for utdanning –0.00036 og for andelen eldre –0.00055, mens den laveste R²-verdien er helt nede på 0.004. Dette viser at modellen i liten grad klarer å forklare endringer over tid. I toveis faste effekter (Two-way FE) blir mønsteret enda tydeligere. Denne modellen kontrollerer både for regionspesifikke forskjeller og årsspesifikke sjokk, noe som gjør at enda mindre tidsvariasjon står igjen til å forklare endringer i ulikhet. I toveis faste effekter (Two-way FE) er p-verdiene høye: 0.5141 for utdanningsnivå og 0.4457 for andelen eldre. Begge ligger langt over 0.1, noe som viser at disse variablene ikke har noen tydelig statistisk effekt innen regionene over tid. Samlet sett viser dette at regionale ulikheter i større grad skyldes stabile og langsiktige strukturelle forhold, og at kortsiktige endringer i utdanning, demografi og økonomisk utvikling spiller en svært begrenset rolle for utviklingen i Gini-koeffisienten i denne perioden.
 
 # Del E: Dokumenter din bruk av KI
-I denne oppgaven brukte jeg kunstig intelligens som støtte i skrive- og analysearbeidet. Programvaren som ble benyttet var ChatGPT fra OpenAI (modell GPT-5.1). KI-verktøyet ble hovedsakelig brukt til å korrigere kodefeil, oversette språk, oppsummere relevant litteratur, forklare datainnhold, forstå økonometriske begreper, kontrollere om teksten var klart formulert, samt bistå med språklig forbedring slik at fremstillingen ble presis og tydelig.
-Gjennom prosessen hadde jeg en målrettet spørrestrategi, hvor jeg stilte flere presise spørsmål om konkrete temaer, for eksempel betydningen av faste effekter, toveis faste effekter, hvorfor tidsinvariante variabler ikke kan estimeres i FE-modeller, og hvordan panelresultater bør tolkes. Jeg brukte også KI til å oversette enkelte avsnitt mellom kinesisk og norsk for å sikre at språket var konsistent i hele rapporten. Etter hver redigering kontrollerte igjen jeg innholdet selv for å unngå overredigering og for å sikre at all analyse og alle konklusjoner var basert på min egen forståelse og mine egne data.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+I denne oppgaven brukte jeg kunstig intelligens som støtte i skrive- og analysearbeidet. Programvaren som ble benyttet var ChatGPT fra OpenAI (modell GPT-5.1). KI-verktøyet ble hovedsakelig brukt til å korrigere kodefeil, oversette språk, oppsummere relevant litteratur, forklare datainnhold, forstå økonometriske begreper, kontrollere om teksten var klart formulert, samt bistå med språklig forbedring slik at fremstillingen ble presis og tydelig. Gjennom prosessen hadde jeg en målrettet spørrestrategi, hvor jeg stilte flere presise spørsmål om konkrete temaer, for eksempel betydningen av faste effekter, toveis faste effekter, hvorfor tidsinvariante variabler ikke kan estimeres i FE-modeller, og hvordan panelresultater bør tolkes. Jeg brukte også KI til å oversette enkelte avsnitt mellom kinesisk og norsk for å sikre at språket var konsistent i hele rapporten. Etter hver redigering kontrollerte igjen jeg innholdet selv for å unngå overredigering og for å sikre at all analyse og alle konklusjoner var basert på min egen forståelse og mine egne data.

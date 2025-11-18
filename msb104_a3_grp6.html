@@ -154,104 +154,55 @@ div.csl-indent {
 <h3 class="anchored" data-anchor-id="datainnsamling">Datainnsamling</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Laster ned utdanningsdatasettet fra Eurostat</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>utdanning <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"edat_lfse_04"</span>, <span class="at">time_format =</span> <span class="st">"num"</span>) </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrerer utdanningsdata for 2017 og grupperer regionene etter lav, middels og høy utdanning</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>utdanning_2017 <span class="ot">&lt;-</span> utdanning <span class="sc">%&gt;%</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">==</span> <span class="dv">2017</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">"T"</span>,            <span class="co"># Begge kjønn</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">==</span> <span class="st">"Y25-64"</span>,       <span class="co"># Aldersgruppen 25–64 år</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    unit <span class="sc">==</span> <span class="st">"PC"</span>,          <span class="co"># Enhet: prosent av befolkningen</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo) <span class="sc">==</span> <span class="dv">4</span>,       <span class="co"># Beholder kun NUTS2-nivå (fire tegn)</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo, <span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">!=</span> <span class="st">"ED3-8"</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">edu_group =</span> <span class="fu">case_when</span>(</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">==</span> <span class="st">"ED0-2"</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ED3_4"</span>, <span class="st">"ED3_4GEN"</span>, <span class="st">"ED3_4VOC"</span>) <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">==</span> <span class="st">"ED5-8"</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  )) <span class="co"># lager tre utdanningsnivå (lav, middels, høy)</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>utdanning_2017</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>utdanning <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"edat_lfse_04"</span>, <span class="at">time_format =</span> <span class="st">"num"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 105 × 9
-   freq  sex   isced11 age    unit  geo   TIME_PERIOD values edu_group
-   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;    
- 1 A     T     ED0-2   Y25-64 PC    BE10         2017   27.1 Low      
- 2 A     T     ED0-2   Y25-64 PC    BE21         2017   22.2 Low      
- 3 A     T     ED0-2   Y25-64 PC    BE22         2017   22.2 Low      
- 4 A     T     ED0-2   Y25-64 PC    BE23         2017   21   Low      
- 5 A     T     ED0-2   Y25-64 PC    BE24         2017   14.3 Low      
- 6 A     T     ED0-2   Y25-64 PC    BE25         2017   22.4 Low      
- 7 A     T     ED0-2   Y25-64 PC    BE31         2017   13.3 Low      
- 8 A     T     ED0-2   Y25-64 PC    BE32         2017   30.9 Low      
- 9 A     T     ED0-2   Y25-64 PC    BE33         2017   30   Low      
-10 A     T     ED0-2   Y25-64 PC    BE34         2017   20   Low      
-# ℹ 95 more rows</code></pre>
+<pre><code>
+indexed 0B in  0s, 0B/s
+indexed 1.00TB in  0s, 50.20TB/s
+                                                                              </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gjør utdanningsdata om til bredt format med tre kolonner for lav, middels og høy utdanning per region</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>utdanning_2017_trenivå <span class="ot">&lt;-</span> utdanning_2017 <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, edu_group, values) <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> edu_group, <span class="at">values_from =</span> values) <span class="sc">%&gt;%</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Lav_utdanning</span><span class="st">`</span>     <span class="ot">=</span> Low,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Middels_utdanning</span><span class="st">`</span> <span class="ot">=</span> Medium,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>     <span class="ot">=</span> High</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>utdanning_2017_trenivå</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 35 × 4
-   geo   Lav_utdanning Middels_utdanning Høy_utdanning
-   &lt;chr&gt;         &lt;dbl&gt;             &lt;dbl&gt;         &lt;dbl&gt;
- 1 BE10           27.1              26.3          46.6
- 2 BE21           22.2              39.7          38.2
- 3 BE22           22.2              42.5          35.4
- 4 BE23           21                36.5          42.6
- 5 BE24           14.3              35            50.7
- 6 BE25           22.4              40.2          37.4
- 7 BE31           13.3              29.5          57.1
- 8 BE32           30.9              38            31.1
- 9 BE33           30                34.4          35.6
-10 BE34           20                42.9          37.1
-# ℹ 25 more rows</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrerer utdanningsdata for 2017 og grupperer regionene etter lav, middels og høy utdanning</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>utdanning_2017 <span class="ot">&lt;-</span> utdanning <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">==</span> <span class="dv">2017</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">"T"</span>,            <span class="co"># Begge kjønn</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">==</span> <span class="st">"Y25-64"</span>,       <span class="co"># Aldersgruppen 25–64 år</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    unit <span class="sc">==</span> <span class="st">"PC"</span>,          <span class="co"># Enhet: prosent av befolkningen</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo) <span class="sc">==</span> <span class="dv">4</span>,       <span class="co"># Beholder kun NUTS2-nivå (fire tegn)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo, <span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">!=</span> <span class="st">"ED3-8"</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">%&gt;%</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">edu_group =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">==</span> <span class="st">"ED0-2"</span> <span class="sc">~</span> <span class="st">"Low"</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"ED3_4"</span>, <span class="st">"ED3_4GEN"</span>, <span class="st">"ED3_4VOC"</span>) <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    isced11 <span class="sc">==</span> <span class="st">"ED5-8"</span> <span class="sc">~</span> <span class="st">"High"</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  )) <span class="co"># lager tre utdanningsnivå (lav, middels, høy)</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Gjør utdanningsdata om til bredt format med tre kolonner for lav, middels og høy utdanning per region</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>utdanning_2017_trenivå <span class="ot">&lt;-</span> utdanning_2017 <span class="sc">%&gt;%</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, edu_group, values) <span class="sc">%&gt;%</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> edu_group, <span class="at">values_from =</span> values) <span class="sc">%&gt;%</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Lav_utdanning</span><span class="st">`</span>     <span class="ot">=</span> Low,</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Middels_utdanning</span><span class="st">`</span> <span class="ot">=</span> Medium,</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>     <span class="ot">=</span> High</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leser excel data_2017_b som brukt i assignment 2 del b</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data_2017_b <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"/Users/liang/Desktop/msb104/msb104_a3/data_2017_b.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"data_2017_b"</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Slå sammen med hoveddatasettet (NUTS2 &lt;-&gt; geo)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>data_2017 <span class="ot">&lt;-</span> data_2017_b <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(utdanning_2017_trenivå, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span> <span class="ot">=</span> <span class="st">"geo"</span>))<span class="sc">%&gt;%</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>utdanning_hoy)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>data_2017</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 23 × 9
-   NUTS2 country change_GDPC_pct Gini_weighted vei_tetthet andelen_over65
-   &lt;chr&gt; &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;       &lt;dbl&gt;          &lt;dbl&gt;
- 1 BE21  BE                 2.82        0.0266      76.5             20.7
- 2 BE22  BE                 3.73        0.112       43.7             20.9
- 3 BE23  BE                 3.72        0.139       65.2             21.3
- 4 BE24  BE                 2.72        0.0626      82.6             20.9
- 5 BE25  BE                 3.10        0.0659      59.0             24.9
- 6 BE32  BE                 2.92        0.0795      74.5             19.8
- 7 BE33  BE                 3.48        0.0675      68.9             20.0
- 8 BE34  BE                 3.41        0.0883      34.5             18.1
- 9 BE35  BE                 2.44        0.0897      28.0             19.5
-10 BG31  BG                12.1         0.0871       0.367           27.6
-# ℹ 13 more rows
-# ℹ 3 more variables: Lav_utdanning &lt;dbl&gt;, Middels_utdanning &lt;dbl&gt;,
-#   Høy_utdanning &lt;dbl&gt;</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># leser excel data_2017_b som brukt i assignment 2 del b</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data_2017_b <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"/Users/liang/Desktop/msb104/msb104_a3/data_2017_b.xlsx"</span>, <span class="at">sheet =</span> <span class="st">"data_2017_b"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Slå sammen med hoveddatasettet (NUTS2 &lt;-&gt; geo)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>data_2017 <span class="ot">&lt;-</span> data_2017_b <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(utdanning_2017_trenivå, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span> <span class="ot">=</span> <span class="st">"geo"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>utdanning_hoy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="estimering-av-effekten-av-tre-utdanningsnivåer-på-ulikhet" class="level3">
 <h3 class="anchored" data-anchor-id="estimering-av-effekten-av-tre-utdanningsnivåer-på-ulikhet">Estimering av effekten av tre utdanningsnivåer på ulikhet</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Low education subset</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_lav  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Lav_utdanning, <span class="at">data =</span> data_2017)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_lav)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Low education subset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model_lav  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Lav_utdanning, <span class="at">data =</span> data_2017)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_lav)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -279,9 +230,9 @@ F-statistic: 4.463 on 4 and 17 DF,  p-value: 0.01198</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Medium education subset</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>model_middels  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Middels_utdanning, <span class="at">data =</span> data_2017)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_middels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Medium education subset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>model_middels  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Middels_utdanning, <span class="at">data =</span> data_2017)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_middels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -309,9 +260,9 @@ F-statistic: 3.651 on 4 and 17 DF,  p-value: 0.02534</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># High education subset</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>model_hoy  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Høy_utdanning, <span class="at">data =</span> data_2017)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_hoy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># High education subset</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>model_hoy  <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> Høy_utdanning, <span class="at">data =</span> data_2017)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_hoy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -339,16 +290,17 @@ F-statistic: 6.019 on 4 and 17 DF,  p-value: 0.003313</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Low education regions"</span>    <span class="ot">=</span> model_lav,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Medium education regions"</span> <span class="ot">=</span> model_middels,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"High education regions"</span>   <span class="ot">=</span> model_hoy</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic =</span> <span class="st">"({statistic})"</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span>   <span class="co"># Behold 5 desimaler </span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Low education regions"</span>    <span class="ot">=</span> model_lav,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Medium education regions"</span> <span class="ot">=</span> model_middels,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"High education regions"</span>   <span class="ot">=</span> model_hoy</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic =</span> <span class="st">"({statistic})"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"markdown"</span>   </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-subset" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-subset-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -356,197 +308,163 @@ Table&nbsp;1: Resultater av delmengderegresjon på tvers av utdanningsgrupper
 </figcaption>
 <div aria-describedby="tbl-subset-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<!-- preamble start -->
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 24%">
+<col style="width: 27%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Low education regions</th>
+<th>Medium education regions</th>
+<th>High education regions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>0.26258*</td>
+<td>0.37050*</td>
+<td>-0.01416</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(2.62313)</td>
+<td>(2.58743)</td>
+<td>(-0.12087)</td>
+</tr>
+<tr class="odd">
+<td>change_GDPC_pct</td>
+<td>0.00331</td>
+<td>0.01351+</td>
+<td>0.01126+</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(0.58259)</td>
+<td>(1.75123)</td>
+<td>(2.03835)</td>
+</tr>
+<tr class="odd">
+<td>vei_tetthet</td>
+<td>-0.00064</td>
+<td>-0.00107*</td>
+<td>-0.00091*</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-1.42518)</td>
+<td>(-2.18457)</td>
+<td>(-2.23227)</td>
+</tr>
+<tr class="odd">
+<td>andelen_over65</td>
+<td>-0.00317</td>
+<td>-0.00493</td>
+<td>-0.00287</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-0.67277)</td>
+<td>(-1.01832)</td>
+<td>(-0.66282)</td>
+</tr>
+<tr class="odd">
+<td>Lav_utdanning</td>
+<td>-0.00457*</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-2.15233)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Middels_utdanning</td>
+<td></td>
+<td>-0.00445</td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>(-1.61701)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Høy_utdanning</td>
+<td></td>
+<td></td>
+<td>0.00433**</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td>(2.91460)</td>
+</tr>
+<tr class="odd">
+<td>Num.Obs.</td>
+<td>22</td>
+<td>22</td>
+<td>22</td>
+</tr>
+<tr class="even">
+<td>R2</td>
+<td>0.512</td>
+<td>0.462</td>
+<td>0.586</td>
+</tr>
+<tr class="odd">
+<td>R2 Adj.</td>
+<td>0.397</td>
+<td>0.335</td>
+<td>0.489</td>
+</tr>
+<tr class="even">
+<td>AIC</td>
+<td>-71.7</td>
+<td>-69.6</td>
+<td>-75.3</td>
+</tr>
+<tr class="odd">
+<td>BIC</td>
+<td>-65.2</td>
+<td>-63.0</td>
+<td>-68.8</td>
+</tr>
+<tr class="even">
+<td>Log.Lik.</td>
+<td>41.859</td>
+<td>40.782</td>
+<td>43.666</td>
+</tr>
+<tr class="odd">
+<td>F</td>
+<td>4.463</td>
+<td>3.651</td>
+<td>6.019</td>
+</tr>
+<tr class="even">
+<td>RMSE</td>
+<td>0.04</td>
+<td>0.04</td>
+<td>0.03</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td colspan="4"><ul>
+<li>p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</li>
+</ul></td>
+</tr>
+</tfoot>
 
-    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
-
-    <script>
-      // Create table-specific functions using external factory
-      const tableFns_3u8ha90gmmv90gjz2845 = TinyTable.createTableFunctions("tinytable_3u8ha90gmmv90gjz2845");
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: '22', j: 2 }, { i: '22', j: 3 }, { i: '22', j: 4 } ], css_id: 'tinytable_css_gv9qzyb6185y4t58wlbj',}, 
-          { positions: [ { i: '14', j: 2 }, { i: '14', j: 3 }, { i: '14', j: 4 } ], css_id: 'tinytable_css_sg7q60d0dczpufehhfir',}, 
-          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '12', j: 2 }, { i: '13', j: 2 }, { i: '15', j: 2 }, { i: '16', j: 2 }, { i: '17', j: 2 }, { i: '18', j: 2 }, { i: '19', j: 2 }, { i: '20', j: 2 }, { i: '21', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '12', j: 3 }, { i: '13', j: 3 }, { i: '15', j: 3 }, { i: '16', j: 3 }, { i: '17', j: 3 }, { i: '18', j: 3 }, { i: '19', j: 3 }, { i: '20', j: 3 }, { i: '21', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '6', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 }, { i: '12', j: 4 }, { i: '13', j: 4 }, { i: '15', j: 4 }, { i: '16', j: 4 }, { i: '17', j: 4 }, { i: '18', j: 4 }, { i: '19', j: 4 }, { i: '20', j: 4 }, { i: '21', j: 4 } ], css_id: 'tinytable_css_rd4dvcr86kfnsbpwa7ur',}, 
-          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_uc8anqhe4mgl2f29bw62',}, 
-          { positions: [ { i: '22', j: 1 } ], css_id: 'tinytable_css_2z3024k6dnt9le3vrcfy',}, 
-          { positions: [ { i: '14', j: 1 } ], css_id: 'tinytable_css_36zdx6dkkrd6ibxf4c7f',}, 
-          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 }, { i: '12', j: 1 }, { i: '13', j: 1 }, { i: '15', j: 1 }, { i: '16', j: 1 }, { i: '17', j: 1 }, { i: '18', j: 1 }, { i: '19', j: 1 }, { i: '20', j: 1 }, { i: '21', j: 1 } ], css_id: 'tinytable_css_arf1ccii7923bk6r2exa',}, 
-          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_orq3cfl45zss9ef3fog9',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  tableFns_3u8ha90gmmv90gjz2845.styleCell(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
-    <style>
-    /* tinytable css entries after */
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_gv9qzyb6185y4t58wlbj, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_gv9qzyb6185y4t58wlbj {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_sg7q60d0dczpufehhfir, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_sg7q60d0dczpufehhfir {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_rd4dvcr86kfnsbpwa7ur, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_rd4dvcr86kfnsbpwa7ur { text-align: center }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_uc8anqhe4mgl2f29bw62, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_uc8anqhe4mgl2f29bw62 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_2z3024k6dnt9le3vrcfy, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_2z3024k6dnt9le3vrcfy {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_36zdx6dkkrd6ibxf4c7f, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_36zdx6dkkrd6ibxf4c7f {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_arf1ccii7923bk6r2exa, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_arf1ccii7923bk6r2exa { text-align: left }
-    #tinytable_3u8ha90gmmv90gjz2845 td.tinytable_css_orq3cfl45zss9ef3fog9, #tinytable_3u8ha90gmmv90gjz2845 th.tinytable_css_orq3cfl45zss9ef3fog9 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    </style>
-    <div class="container">
-      <table class="tinytable" id="tinytable_3u8ha90gmmv90gjz2845" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
-        
-        <thead>
-              <tr>
-                <th scope="col" data-row="0" data-col="1"> </th>
-                <th scope="col" data-row="0" data-col="2">Low education regions</th>
-                <th scope="col" data-row="0" data-col="3">Medium education regions</th>
-                <th scope="col" data-row="0" data-col="4">High education regions</th>
-              </tr>
-        </thead>
-        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
-        <tbody>
-                <tr>
-                  <td data-row="1" data-col="1">(Intercept)</td>
-                  <td data-row="1" data-col="2">0.26258*</td>
-                  <td data-row="1" data-col="3">0.37050*</td>
-                  <td data-row="1" data-col="4">-0.01416</td>
-                </tr>
-                <tr>
-                  <td data-row="2" data-col="1"></td>
-                  <td data-row="2" data-col="2">(2.62313)</td>
-                  <td data-row="2" data-col="3">(2.58743)</td>
-                  <td data-row="2" data-col="4">(-0.12087)</td>
-                </tr>
-                <tr>
-                  <td data-row="3" data-col="1">change_GDPC_pct</td>
-                  <td data-row="3" data-col="2">0.00331</td>
-                  <td data-row="3" data-col="3">0.01351+</td>
-                  <td data-row="3" data-col="4">0.01126+</td>
-                </tr>
-                <tr>
-                  <td data-row="4" data-col="1"></td>
-                  <td data-row="4" data-col="2">(0.58259)</td>
-                  <td data-row="4" data-col="3">(1.75123)</td>
-                  <td data-row="4" data-col="4">(2.03835)</td>
-                </tr>
-                <tr>
-                  <td data-row="5" data-col="1">vei_tetthet</td>
-                  <td data-row="5" data-col="2">-0.00064</td>
-                  <td data-row="5" data-col="3">-0.00107*</td>
-                  <td data-row="5" data-col="4">-0.00091*</td>
-                </tr>
-                <tr>
-                  <td data-row="6" data-col="1"></td>
-                  <td data-row="6" data-col="2">(-1.42518)</td>
-                  <td data-row="6" data-col="3">(-2.18457)</td>
-                  <td data-row="6" data-col="4">(-2.23227)</td>
-                </tr>
-                <tr>
-                  <td data-row="7" data-col="1">andelen_over65</td>
-                  <td data-row="7" data-col="2">-0.00317</td>
-                  <td data-row="7" data-col="3">-0.00493</td>
-                  <td data-row="7" data-col="4">-0.00287</td>
-                </tr>
-                <tr>
-                  <td data-row="8" data-col="1"></td>
-                  <td data-row="8" data-col="2">(-0.67277)</td>
-                  <td data-row="8" data-col="3">(-1.01832)</td>
-                  <td data-row="8" data-col="4">(-0.66282)</td>
-                </tr>
-                <tr>
-                  <td data-row="9" data-col="1">Lav_utdanning</td>
-                  <td data-row="9" data-col="2">-0.00457*</td>
-                  <td data-row="9" data-col="3"></td>
-                  <td data-row="9" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="10" data-col="1"></td>
-                  <td data-row="10" data-col="2">(-2.15233)</td>
-                  <td data-row="10" data-col="3"></td>
-                  <td data-row="10" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="11" data-col="1">Middels_utdanning</td>
-                  <td data-row="11" data-col="2"></td>
-                  <td data-row="11" data-col="3">-0.00445</td>
-                  <td data-row="11" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="12" data-col="1"></td>
-                  <td data-row="12" data-col="2"></td>
-                  <td data-row="12" data-col="3">(-1.61701)</td>
-                  <td data-row="12" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="13" data-col="1">Høy_utdanning</td>
-                  <td data-row="13" data-col="2"></td>
-                  <td data-row="13" data-col="3"></td>
-                  <td data-row="13" data-col="4">0.00433**</td>
-                </tr>
-                <tr>
-                  <td data-row="14" data-col="1"></td>
-                  <td data-row="14" data-col="2"></td>
-                  <td data-row="14" data-col="3"></td>
-                  <td data-row="14" data-col="4">(2.91460)</td>
-                </tr>
-                <tr>
-                  <td data-row="15" data-col="1">Num.Obs.</td>
-                  <td data-row="15" data-col="2">22</td>
-                  <td data-row="15" data-col="3">22</td>
-                  <td data-row="15" data-col="4">22</td>
-                </tr>
-                <tr>
-                  <td data-row="16" data-col="1">R2</td>
-                  <td data-row="16" data-col="2">0.512</td>
-                  <td data-row="16" data-col="3">0.462</td>
-                  <td data-row="16" data-col="4">0.586</td>
-                </tr>
-                <tr>
-                  <td data-row="17" data-col="1">R2 Adj.</td>
-                  <td data-row="17" data-col="2">0.397</td>
-                  <td data-row="17" data-col="3">0.335</td>
-                  <td data-row="17" data-col="4">0.489</td>
-                </tr>
-                <tr>
-                  <td data-row="18" data-col="1">AIC</td>
-                  <td data-row="18" data-col="2">-71.7</td>
-                  <td data-row="18" data-col="3">-69.6</td>
-                  <td data-row="18" data-col="4">-75.3</td>
-                </tr>
-                <tr>
-                  <td data-row="19" data-col="1">BIC</td>
-                  <td data-row="19" data-col="2">-65.2</td>
-                  <td data-row="19" data-col="3">-63.0</td>
-                  <td data-row="19" data-col="4">-68.8</td>
-                </tr>
-                <tr>
-                  <td data-row="20" data-col="1">Log.Lik.</td>
-                  <td data-row="20" data-col="2">41.859</td>
-                  <td data-row="20" data-col="3">40.782</td>
-                  <td data-row="20" data-col="4">43.666</td>
-                </tr>
-                <tr>
-                  <td data-row="21" data-col="1">F</td>
-                  <td data-row="21" data-col="2">4.463</td>
-                  <td data-row="21" data-col="3">3.651</td>
-                  <td data-row="21" data-col="4">6.019</td>
-                </tr>
-                <tr>
-                  <td data-row="22" data-col="1">RMSE</td>
-                  <td data-row="22" data-col="2">0.04</td>
-                  <td data-row="22" data-col="3">0.04</td>
-                  <td data-row="22" data-col="4">0.03</td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- hack to avoid NA insertion in last line -->
+</table>
 </div>
 </div>
 </figure>
@@ -556,11 +474,7 @@ Table&nbsp;1: Resultater av delmengderegresjon på tvers av utdanningsgrupper
 </section>
 <section id="diskusjon-om-delmengdeanalyse-200400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="diskusjon-om-delmengdeanalyse-200400-ord">Diskusjon om delmengdeanalyse: (200–400 ord)</h2>
-<p>Som vist i tabell <a href="#tbl-subset" class="quarto-xref">Table&nbsp;1</a> undersøker delmengdeanalysen om sammenhengen mellom regional økonomisk utvikling og inntektsulikhet varierer på tvers av regioner med ulike utdanningsprofiler. Når de andre tre variablene holdes konstante, viser resultatene at ulike utdanningsnivåer som lavt, middels og høyt påvirker inntektsulikheten på forskjellige måter.</p>
-<p>I regioner med lav utdanning er utviklingseffekten (change_GDPC_pct) positiv, men ikke signifikant (omtrent estimate 0.003 og p 0.567), noe som tyder på at økonomisk vekst alene ikke reduserer ulikheten. Lav utdanning har en negativ og signifikant effekt (omtrent estimate −0.0046 og p 0.046), som betyr at økt utdanningsnivå i lavt utdannede regioner bidrar til å redusere forskjeller. Her spiller utdanning en sterkere rolle enn både økonomisk utvikling og infrastruktur.</p>
-<p>I regioner med middels utdanning er utviklingseffekten svak positiv (omtrent p 0.098), mens middels utdanning har en negativ, men ikke signifikant effekt (p 0.124). Veitetthet viser derimot en tydelig negativ og signifikant effekt (p = 0.043). Dette indikerer at infrastruktur har større forklaringskraft enn utdanning i disse områdene, og at bedre tilkobling mellom regioner kan bidra mer effektivt til å redusere inntektsulikhet enn økt utdanningsnivå.</p>
-<p>I regioner med høy utdanning er både økonomisk utvikling (p = 0.057) og høy utdanning (p = 0.0097) positivt og signifikant knyttet til ulikhet. Veitetthet har derimot en negativ og signifikant effekt (estimate −0.0009, p 0.039), noe som tyder på at bedre infrastruktur kan bidra til å dempe forskjeller som ellers øker med økonomisk vekst og høyt utdanningsnivå. Dette antyder at når utdanningsnivået allerede er høyt, fører videre vekst og utdanning til at inntektsforskjellene øker, sannsynligvis fordi gevinsten av utviklingen tilfaller de mest kvalifiserte gruppene.</p>
-<p>Samlet viser analysen at utdanning reduserer ulikhet i lavt utdannede regioner, men kan forsterke forskjeller i høyt utdannede regioner, mens infrastruktur fremstår som en mer stabil og gjennomgående utjevnende faktor.</p>
+<p>Som vist i tabell <a href="#tbl-subset" class="quarto-xref">Table&nbsp;1</a> undersøker delmengdeanalysen om sammenhengen mellom regional økonomisk utvikling og inntektsulikhet varierer på tvers av regioner med ulike utdanningsprofiler. Når de andre tre variablene holdes konstante, viser resultatene at ulike utdanningsnivåer som lavt, middels og høyt påvirker inntektsulikheten på forskjellige måter. I regioner med lav utdanning er utviklingseffekten (change_GDPC_pct) positiv, men ikke signifikant (omtrent estimate 0.003 og p 0.567), noe som tyder på at økonomisk vekst alene ikke reduserer ulikheten. Lav utdanning har en negativ og signifikant effekt (omtrent estimate −0.0046 og p 0.046), som betyr at økt utdanningsnivå i lavt utdannede regioner bidrar til å redusere forskjeller. Her spiller utdanning en sterkere rolle enn både økonomisk utvikling og infrastruktur. I regioner med middels utdanning er utviklingseffekten svak positiv (omtrent p 0.098), mens middels utdanning har en negativ, men ikke signifikant effekt (p 0.124). Veitetthet viser derimot en tydelig negativ og signifikant effekt (p = 0.043). Dette indikerer at infrastruktur har større forklaringskraft enn utdanning i disse områdene, og at bedre tilkobling mellom regioner kan bidra mer effektivt til å redusere inntektsulikhet enn økt utdanningsnivå. I regioner med høy utdanning er både økonomisk utvikling (p = 0.057) og høy utdanning (p = 0.0097) positivt og signifikant knyttet til ulikhet. Veitetthet har derimot en negativ og signifikant effekt (estimate −0.0009, p 0.039), noe som tyder på at bedre infrastruktur kan bidra til å dempe forskjeller som ellers øker med økonomisk vekst og høyt utdanningsnivå. Dette antyder at når utdanningsnivået allerede er høyt, fører videre vekst og utdanning til at inntektsforskjellene øker, sannsynligvis fordi gevinsten av utviklingen tilfaller de mest kvalifiserte gruppene. Samlet viser analysen at utdanning reduserer ulikhet i lavt utdannede regioner, men kan forsterke forskjeller i høyt utdannede regioner, mens infrastruktur fremstår som en mer stabil og gjennomgående utjevnende faktor.</p>
 </section>
 </section>
 <section id="del-b-utforsking-av-alternative-funksjonsformer" class="level1">
@@ -568,9 +482,9 @@ Table&nbsp;1: Resultater av delmengderegresjon på tvers av utdanningsgrupper
 <section id="utforsk-alternative-funksjonsformer" class="level2">
 <h2 class="anchored" data-anchor-id="utforsk-alternative-funksjonsformer">Utforsk alternative funksjonsformer</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-lineær modell</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model_log <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> <span class="fu">log</span>(change_GDPC_pct <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-lineær modell</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model_log <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> <span class="fu">log</span>(change_GDPC_pct <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -598,9 +512,9 @@ F-statistic: 6.715 on 4 and 17 DF,  p-value: 0.001968</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kvadratisk modell</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model_kvad <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_kvad)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kvadratisk modell</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model_kvad <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_kvad)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -629,9 +543,9 @@ F-statistic: 5.696 on 5 and 16 DF,  p-value: 0.003328</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kubisk modell</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>model_kub <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_kub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kubisk modell</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model_kub <span class="ot">&lt;-</span> <span class="fu">lm</span>(Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(change_GDPC_pct<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> vei_tetthet <span class="sc">+</span> andelen_over65 <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">data =</span> data_2017)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_kub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -662,16 +576,17 @@ F-statistic: 4.673 on 6 and 15 DF,  p-value: 0.007158</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Log-lineær modell"</span> <span class="ot">=</span> model_log,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kvadratisk modell"</span> <span class="ot">=</span> model_kvad,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kubisk modell"</span>     <span class="ot">=</span> model_kub</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic =</span> <span class="st">"({statistic})"</span>,   <span class="co"># viser t-verdier i parentes</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span>                        <span class="co"># # beholder 5 desimaler</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Log-lineær modell"</span> <span class="ot">=</span> model_log,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kvadratisk modell"</span> <span class="ot">=</span> model_kvad,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Kubisk modell"</span>     <span class="ot">=</span> model_kub</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">statistic =</span> <span class="st">"({statistic})"</span>,   <span class="co"># viser t-verdier i parentes</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span>,</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"markdown"</span>   </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-funksjonsformer" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-funksjonsformer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -679,209 +594,175 @@ Table&nbsp;2: logaritmiske, kvadratiske, kubiske
 </figcaption>
 <div aria-describedby="tbl-funksjonsformer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<!-- preamble start -->
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Log-lineær modell</th>
+<th>Kvadratisk modell</th>
+<th>Kubisk modell</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>-0.12151</td>
+<td>-0.14363</td>
+<td>-0.07947</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-0.93697)</td>
+<td>(-1.02523)</td>
+<td>(-0.46799)</td>
+</tr>
+<tr class="odd">
+<td>log(change_GDPC_pct + 1)</td>
+<td>0.08266*</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(2.36393)</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>vei_tetthet</td>
+<td>-0.00087*</td>
+<td>-0.00086*</td>
+<td>-0.00078+</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-2.24811)</td>
+<td>(-2.20387)</td>
+<td>(-1.87064)</td>
+</tr>
+<tr class="odd">
+<td>andelen_over65</td>
+<td>-0.00236</td>
+<td>-0.00046</td>
+<td>-0.00003</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(-0.57973)</td>
+<td>(-0.10355)</td>
+<td>(-0.00574)</td>
+</tr>
+<tr class="odd">
+<td>Høy_utdanning</td>
+<td>0.00467**</td>
+<td>0.00475**</td>
+<td>0.00450**</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(3.17124)</td>
+<td>(3.26921)</td>
+<td>(2.95712)</td>
+</tr>
+<tr class="odd">
+<td>change_GDPC_pct</td>
+<td></td>
+<td>0.03697*</td>
+<td>-0.00154</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>(2.12585)</td>
+<td>(-0.02643)</td>
+</tr>
+<tr class="odd">
+<td>I(change_GDPC_pct^2)</td>
+<td></td>
+<td>-0.00200</td>
+<td>0.00403</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>(-1.55222)</td>
+<td>(0.45855)</td>
+</tr>
+<tr class="odd">
+<td>I(change_GDPC_pct^3)</td>
+<td></td>
+<td></td>
+<td>-0.00028</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td>(-0.69392)</td>
+</tr>
+<tr class="odd">
+<td>Num.Obs.</td>
+<td>22</td>
+<td>22</td>
+<td>22</td>
+</tr>
+<tr class="even">
+<td>R2</td>
+<td>0.612</td>
+<td>0.640</td>
+<td>0.651</td>
+</tr>
+<tr class="odd">
+<td>R2 Adj.</td>
+<td>0.521</td>
+<td>0.528</td>
+<td>0.512</td>
+</tr>
+<tr class="even">
+<td>AIC</td>
+<td>-76.8</td>
+<td>-76.4</td>
+<td>-75.1</td>
+</tr>
+<tr class="odd">
+<td>BIC</td>
+<td>-70.2</td>
+<td>-68.8</td>
+<td>-66.4</td>
+</tr>
+<tr class="even">
+<td>Log.Lik.</td>
+<td>44.387</td>
+<td>45.209</td>
+<td>45.557</td>
+</tr>
+<tr class="odd">
+<td>F</td>
+<td>6.715</td>
+<td>5.696</td>
+<td>4.673</td>
+</tr>
+<tr class="even">
+<td>RMSE</td>
+<td>0.03</td>
+<td>0.03</td>
+<td>0.03</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td colspan="4"><ul>
+<li>p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</li>
+</ul></td>
+</tr>
+</tfoot>
 
-    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
-
-    <script>
-      // Create table-specific functions using external factory
-      const tableFns_5n118uuf5twdply9j58f = TinyTable.createTableFunctions("tinytable_5n118uuf5twdply9j58f");
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: '24', j: 2 }, { i: '24', j: 3 }, { i: '24', j: 4 } ], css_id: 'tinytable_css_1qbi9pwgju1ekj0gxvca',}, 
-          { positions: [ { i: '16', j: 2 }, { i: '16', j: 3 }, { i: '16', j: 4 } ], css_id: 'tinytable_css_oehpkju17ljpdo0omdxj',}, 
-          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '12', j: 2 }, { i: '13', j: 2 }, { i: '14', j: 2 }, { i: '15', j: 2 }, { i: '17', j: 2 }, { i: '18', j: 2 }, { i: '19', j: 2 }, { i: '20', j: 2 }, { i: '21', j: 2 }, { i: '22', j: 2 }, { i: '23', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '12', j: 3 }, { i: '13', j: 3 }, { i: '14', j: 3 }, { i: '15', j: 3 }, { i: '17', j: 3 }, { i: '18', j: 3 }, { i: '19', j: 3 }, { i: '20', j: 3 }, { i: '21', j: 3 }, { i: '22', j: 3 }, { i: '23', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '6', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 }, { i: '12', j: 4 }, { i: '13', j: 4 }, { i: '14', j: 4 }, { i: '15', j: 4 }, { i: '17', j: 4 }, { i: '18', j: 4 }, { i: '19', j: 4 }, { i: '20', j: 4 }, { i: '21', j: 4 }, { i: '22', j: 4 }, { i: '23', j: 4 } ], css_id: 'tinytable_css_piln3jsd8o9gzxoeo5ra',}, 
-          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_s7lqtczvpkat3g6n1539',}, 
-          { positions: [ { i: '24', j: 1 } ], css_id: 'tinytable_css_k6ndyz8jr5vzu88jxj4q',}, 
-          { positions: [ { i: '16', j: 1 } ], css_id: 'tinytable_css_xwdx75i1lwhkpftw42y0',}, 
-          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 }, { i: '12', j: 1 }, { i: '13', j: 1 }, { i: '14', j: 1 }, { i: '15', j: 1 }, { i: '17', j: 1 }, { i: '18', j: 1 }, { i: '19', j: 1 }, { i: '20', j: 1 }, { i: '21', j: 1 }, { i: '22', j: 1 }, { i: '23', j: 1 } ], css_id: 'tinytable_css_5etdiucb6kf98rpjkjuv',}, 
-          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_5wu0tgqeqkkb2y0iv6bo',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  tableFns_5n118uuf5twdply9j58f.styleCell(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
-    <style>
-    /* tinytable css entries after */
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_1qbi9pwgju1ekj0gxvca, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_1qbi9pwgju1ekj0gxvca {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_oehpkju17ljpdo0omdxj, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_oehpkju17ljpdo0omdxj {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_piln3jsd8o9gzxoeo5ra, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_piln3jsd8o9gzxoeo5ra { text-align: center }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_s7lqtczvpkat3g6n1539, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_s7lqtczvpkat3g6n1539 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_k6ndyz8jr5vzu88jxj4q, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_k6ndyz8jr5vzu88jxj4q {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_xwdx75i1lwhkpftw42y0, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_xwdx75i1lwhkpftw42y0 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_5etdiucb6kf98rpjkjuv, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_5etdiucb6kf98rpjkjuv { text-align: left }
-    #tinytable_5n118uuf5twdply9j58f td.tinytable_css_5wu0tgqeqkkb2y0iv6bo, #tinytable_5n118uuf5twdply9j58f th.tinytable_css_5wu0tgqeqkkb2y0iv6bo {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    </style>
-    <div class="container">
-      <table class="tinytable" id="tinytable_5n118uuf5twdply9j58f" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
-        
-        <thead>
-              <tr>
-                <th scope="col" data-row="0" data-col="1"> </th>
-                <th scope="col" data-row="0" data-col="2">Log-lineær modell</th>
-                <th scope="col" data-row="0" data-col="3">Kvadratisk modell</th>
-                <th scope="col" data-row="0" data-col="4">Kubisk modell</th>
-              </tr>
-        </thead>
-        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
-        <tbody>
-                <tr>
-                  <td data-row="1" data-col="1">(Intercept)</td>
-                  <td data-row="1" data-col="2">-0.12151</td>
-                  <td data-row="1" data-col="3">-0.14363</td>
-                  <td data-row="1" data-col="4">-0.07947</td>
-                </tr>
-                <tr>
-                  <td data-row="2" data-col="1"></td>
-                  <td data-row="2" data-col="2">(-0.93697)</td>
-                  <td data-row="2" data-col="3">(-1.02523)</td>
-                  <td data-row="2" data-col="4">(-0.46799)</td>
-                </tr>
-                <tr>
-                  <td data-row="3" data-col="1">log(change_GDPC_pct + 1)</td>
-                  <td data-row="3" data-col="2">0.08266*</td>
-                  <td data-row="3" data-col="3"></td>
-                  <td data-row="3" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="4" data-col="1"></td>
-                  <td data-row="4" data-col="2">(2.36393)</td>
-                  <td data-row="4" data-col="3"></td>
-                  <td data-row="4" data-col="4"></td>
-                </tr>
-                <tr>
-                  <td data-row="5" data-col="1">vei_tetthet</td>
-                  <td data-row="5" data-col="2">-0.00087*</td>
-                  <td data-row="5" data-col="3">-0.00086*</td>
-                  <td data-row="5" data-col="4">-0.00078+</td>
-                </tr>
-                <tr>
-                  <td data-row="6" data-col="1"></td>
-                  <td data-row="6" data-col="2">(-2.24811)</td>
-                  <td data-row="6" data-col="3">(-2.20387)</td>
-                  <td data-row="6" data-col="4">(-1.87064)</td>
-                </tr>
-                <tr>
-                  <td data-row="7" data-col="1">andelen_over65</td>
-                  <td data-row="7" data-col="2">-0.00236</td>
-                  <td data-row="7" data-col="3">-0.00046</td>
-                  <td data-row="7" data-col="4">-0.00003</td>
-                </tr>
-                <tr>
-                  <td data-row="8" data-col="1"></td>
-                  <td data-row="8" data-col="2">(-0.57973)</td>
-                  <td data-row="8" data-col="3">(-0.10355)</td>
-                  <td data-row="8" data-col="4">(-0.00574)</td>
-                </tr>
-                <tr>
-                  <td data-row="9" data-col="1">Høy_utdanning</td>
-                  <td data-row="9" data-col="2">0.00467**</td>
-                  <td data-row="9" data-col="3">0.00475**</td>
-                  <td data-row="9" data-col="4">0.00450**</td>
-                </tr>
-                <tr>
-                  <td data-row="10" data-col="1"></td>
-                  <td data-row="10" data-col="2">(3.17124)</td>
-                  <td data-row="10" data-col="3">(3.26921)</td>
-                  <td data-row="10" data-col="4">(2.95712)</td>
-                </tr>
-                <tr>
-                  <td data-row="11" data-col="1">change_GDPC_pct</td>
-                  <td data-row="11" data-col="2"></td>
-                  <td data-row="11" data-col="3">0.03697*</td>
-                  <td data-row="11" data-col="4">-0.00154</td>
-                </tr>
-                <tr>
-                  <td data-row="12" data-col="1"></td>
-                  <td data-row="12" data-col="2"></td>
-                  <td data-row="12" data-col="3">(2.12585)</td>
-                  <td data-row="12" data-col="4">(-0.02643)</td>
-                </tr>
-                <tr>
-                  <td data-row="13" data-col="1">I(change_GDPC_pct^2)</td>
-                  <td data-row="13" data-col="2"></td>
-                  <td data-row="13" data-col="3">-0.00200</td>
-                  <td data-row="13" data-col="4">0.00403</td>
-                </tr>
-                <tr>
-                  <td data-row="14" data-col="1"></td>
-                  <td data-row="14" data-col="2"></td>
-                  <td data-row="14" data-col="3">(-1.55222)</td>
-                  <td data-row="14" data-col="4">(0.45855)</td>
-                </tr>
-                <tr>
-                  <td data-row="15" data-col="1">I(change_GDPC_pct^3)</td>
-                  <td data-row="15" data-col="2"></td>
-                  <td data-row="15" data-col="3"></td>
-                  <td data-row="15" data-col="4">-0.00028</td>
-                </tr>
-                <tr>
-                  <td data-row="16" data-col="1"></td>
-                  <td data-row="16" data-col="2"></td>
-                  <td data-row="16" data-col="3"></td>
-                  <td data-row="16" data-col="4">(-0.69392)</td>
-                </tr>
-                <tr>
-                  <td data-row="17" data-col="1">Num.Obs.</td>
-                  <td data-row="17" data-col="2">22</td>
-                  <td data-row="17" data-col="3">22</td>
-                  <td data-row="17" data-col="4">22</td>
-                </tr>
-                <tr>
-                  <td data-row="18" data-col="1">R2</td>
-                  <td data-row="18" data-col="2">0.612</td>
-                  <td data-row="18" data-col="3">0.640</td>
-                  <td data-row="18" data-col="4">0.651</td>
-                </tr>
-                <tr>
-                  <td data-row="19" data-col="1">R2 Adj.</td>
-                  <td data-row="19" data-col="2">0.521</td>
-                  <td data-row="19" data-col="3">0.528</td>
-                  <td data-row="19" data-col="4">0.512</td>
-                </tr>
-                <tr>
-                  <td data-row="20" data-col="1">AIC</td>
-                  <td data-row="20" data-col="2">-76.8</td>
-                  <td data-row="20" data-col="3">-76.4</td>
-                  <td data-row="20" data-col="4">-75.1</td>
-                </tr>
-                <tr>
-                  <td data-row="21" data-col="1">BIC</td>
-                  <td data-row="21" data-col="2">-70.2</td>
-                  <td data-row="21" data-col="3">-68.8</td>
-                  <td data-row="21" data-col="4">-66.4</td>
-                </tr>
-                <tr>
-                  <td data-row="22" data-col="1">Log.Lik.</td>
-                  <td data-row="22" data-col="2">44.387</td>
-                  <td data-row="22" data-col="3">45.209</td>
-                  <td data-row="22" data-col="4">45.557</td>
-                </tr>
-                <tr>
-                  <td data-row="23" data-col="1">F</td>
-                  <td data-row="23" data-col="2">6.715</td>
-                  <td data-row="23" data-col="3">5.696</td>
-                  <td data-row="23" data-col="4">4.673</td>
-                </tr>
-                <tr>
-                  <td data-row="24" data-col="1">RMSE</td>
-                  <td data-row="24" data-col="2">0.03</td>
-                  <td data-row="24" data-col="3">0.03</td>
-                  <td data-row="24" data-col="4">0.03</td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- hack to avoid NA insertion in last line -->
+</table>
 </div>
 </div>
 </figure>
@@ -889,47 +770,46 @@ Table&nbsp;2: logaritmiske, kvadratiske, kubiske
 </div>
 <section id="begrunn-valgene-mine" class="level3">
 <h3 class="anchored" data-anchor-id="begrunn-valgene-mine">Begrunn valgene mine</h3>
-<p>Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes teoretisk av Kuznets-hypotesen <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og deretter reduseres med økonomisk utvikling.</p>
-<p>Resultatene støttes av artikkelen <span class="citation" data-cites="LESSMANN2017110">Lessmann and Seidel (<a href="#ref-LESSMANN2017110" role="doc-biblioref">2017</a>)</span>, som finner en ikke-lineær sammenheng mellom økonomisk utvikling og regional ulikhet. De viser at ulikheten først øker og deretter reduseres etter hvert som økonomien utvikler seg, noe som tilsvarer den klassiske Kuznets-kurven <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>.</p>
+<p>Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes teoretisk av Kuznets-hypotesen <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og deretter reduseres med økonomisk utvikling. Resultatene støttes av artikkelen <span class="citation" data-cites="LESSMANN2017110">Lessmann and Seidel (<a href="#ref-LESSMANN2017110" role="doc-biblioref">2017</a>)</span>, om fant at ulikhet først øker og deretter avtar med økonomisk utvikling, og viser en N-formet sammenheng, noe som tilsvarer den klassiske Kuznets-kurven <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>.</p>
 </section>
 </section>
 <section id="visualisering" class="level2">
 <h2 class="anchored" data-anchor-id="visualisering">Visualisering</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lager et nytt datasett for visualisering av modellene</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>visualisering_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">change_GDPC_pct =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_2017<span class="sc">$</span>change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">max</span>(data_2017<span class="sc">$</span>change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">length.out =</span> <span class="dv">100</span>), <span class="co"># Oppretter 100 jevnt fordelte verdier for økonomisk vekst (change_GDPC_pct)</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vei_tetthet =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span>vei_tetthet, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">andelen_over65 =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span>andelen_over65, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  Høy<span class="at">_utdanning =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span><span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="co"># Holder de andre forklaringsvariablene konstante ved å bruke gjennomsnittsverdier</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Beregner predikerte Gini-verdier fra den log-lineære modellen</span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>visualisering_data<span class="sc">$</span>pred_log  <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_log,  <span class="at">newdata =</span> visualisering_data)</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Beregner predikerte Gini-verdier fra den kvadratiske modellen</span></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>visualisering_data<span class="sc">$</span>pred_kvad <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_kvad, <span class="at">newdata =</span> visualisering_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lager et nytt datasett for visualisering av modellene</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>visualisering_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">change_GDPC_pct =</span> <span class="fu">seq</span>(<span class="fu">min</span>(data_2017<span class="sc">$</span>change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">max</span>(data_2017<span class="sc">$</span>change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">length.out =</span> <span class="dv">100</span>), <span class="co"># Oppretter 100 jevnt fordelte verdier for økonomisk vekst (change_GDPC_pct)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vei_tetthet =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span>vei_tetthet, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">andelen_over65 =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span>andelen_over65, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  Høy<span class="at">_utdanning =</span> <span class="fu">mean</span>(data_2017<span class="sc">$</span><span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="co"># Holder de andre forklaringsvariablene konstante ved å bruke gjennomsnittsverdier</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Beregner predikerte Gini-verdier fra den log-lineære modellen</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>visualisering_data<span class="sc">$</span>pred_log  <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_log,  <span class="at">newdata =</span> visualisering_data)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Beregner predikerte Gini-verdier fra den kvadratiske modellen</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>visualisering_data<span class="sc">$</span>pred_kvad <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_kvad, <span class="at">newdata =</span> visualisering_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>visualisering <span class="ot">&lt;-</span> data_2017 <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> change_GDPC_pct, <span class="at">y =</span> Gini_weighted)) <span class="sc">+</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> visualisering_data, <span class="fu">aes</span>(<span class="at">y =</span> pred_log, <span class="at">color =</span> <span class="st">"Log-lineær modell"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> visualisering_data, <span class="fu">aes</span>(<span class="at">y =</span> pred_kvad, <span class="at">color =</span> <span class="st">"Kvadratisk modell"</span>), <span class="at">size =</span> <span class="fl">1.2</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Log-lineær modell"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Kvadratisk modell"</span> <span class="ot">=</span> <span class="st">"red"</span>)) <span class="sc">+</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sammenheng mellom økonomisk utvikling og inntektsulikhet"</span>,</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Sammenligning av log-lineær og kvadratisk modell"</span>,</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Endring i BNP per innbygger (%)"</span>,</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Gini-koeffisient"</span>,</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Modell"</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)  <span class="sc">+</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),   </span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>)  </span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>visualisering</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>visualisering <span class="ot">&lt;-</span> data_2017 <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> change_GDPC_pct, <span class="at">y =</span> Gini_weighted)) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>, <span class="at">color =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> visualisering_data, <span class="fu">aes</span>(<span class="at">y =</span> pred_log, <span class="at">color =</span> <span class="st">"Log-lineær modell"</span>), <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> visualisering_data, <span class="fu">aes</span>(<span class="at">y =</span> pred_kvad, <span class="at">color =</span> <span class="st">"Kvadratisk modell"</span>), <span class="at">size =</span> <span class="fl">1.2</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Log-lineær modell"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Kvadratisk modell"</span> <span class="ot">=</span> <span class="st">"red"</span>)) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sammenheng mellom økonomisk utvikling og inntektsulikhet"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Sammenligning av log-lineær og kvadratisk modell"</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Endring i BNP per innbygger (%)"</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Gini-koeffisient"</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Modell"</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)  <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),   </span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>)  </span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>visualisering</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-log-kvadratisk" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -947,11 +827,7 @@ Figure&nbsp;1: Visualisering av log-lineær og kvadratisk modell for sammenhenge
 </section>
 <section id="tolkning-av-resultater-opp-til-400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="tolkning-av-resultater-opp-til-400-ord">Tolkning av resultater (opp til 400 ord)</h2>
-<p>Resultatene fra <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528).</p>
-<p>I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer.</p>
-<p>Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som en svak Kuznets-lignende kurve <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og senere flater ut.</p>
-<p>Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt.</p>
-<p>Samlet sett peker resultatene mot en ikke-lineær utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Dette samsvarer med litteratur som fremhever ikke-lineære utviklingsbaner, slik som <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span> og <span class="citation" data-cites="LESSMANN2017110">Lessmann and Seidel (<a href="#ref-LESSMANN2017110" role="doc-biblioref">2017</a>)</span>. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.</p>
+<p>Resultatene fra <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528). I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer. Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som en svak Kuznets-lignende kurve <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og senere flater ut. Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt. Samlet sett peker resultatene mot en ikke-lineære utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.</p>
 </section>
 </section>
 <section id="del-c-heteroskedastisitetstesting-og-kausalitetsdiskusjon" class="level1">
@@ -959,20 +835,20 @@ Figure&nbsp;1: Visualisering av log-lineær og kvadratisk modell for sammenhenge
 <section id="heteroskedastisitetstesting" class="level2">
 <h2 class="anchored" data-anchor-id="heteroskedastisitetstesting">Heteroskedastisitetstesting</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breusch–Pagan-test</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>bp_log  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_log)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>bp_kvad <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kvad)</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>bp_kub  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kub)</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># White-test (BP på predikerte verdier og deres kvadrat)</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>wt_log  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_log,  <span class="sc">~</span> <span class="fu">fitted</span>(model_log)  <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_log)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>wt_kvad <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kvad, <span class="sc">~</span> <span class="fu">fitted</span>(model_kvad) <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_kvad)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>wt_kub  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kub,  <span class="sc">~</span> <span class="fu">fitted</span>(model_kub)  <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_kub)<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Score-test (car::ncvTest)</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>sc_log  <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_log)</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>sc_kvad <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_kvad)</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>sc_kub  <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_kub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breusch–Pagan-test</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>bp_log  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_log)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>bp_kvad <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kvad)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>bp_kub  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kub)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co"># White-test (BP på predikerte verdier og deres kvadrat)</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>wt_log  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_log,  <span class="sc">~</span> <span class="fu">fitted</span>(model_log)  <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_log)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>wt_kvad <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kvad, <span class="sc">~</span> <span class="fu">fitted</span>(model_kvad) <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_kvad)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>wt_kub  <span class="ot">&lt;-</span> <span class="fu">bptest</span>(model_kub,  <span class="sc">~</span> <span class="fu">fitted</span>(model_kub)  <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">fitted</span>(model_kub)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Score-test (car::ncvTest)</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>sc_log  <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_log)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>sc_kvad <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_kvad)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>sc_kub  <span class="ot">&lt;-</span> <span class="fu">ncvTest</span>(model_kub)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tbl-heteroskedastisitet" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -980,14 +856,14 @@ Figure&nbsp;1: Visualisering av log-lineær og kvadratisk modell for sammenhenge
 Table&nbsp;3: Resultater fra Breusch–Pagan-, White- og Score-testene for de tre modellene
 </figcaption>
 <div aria-describedby="tbl-heteroskedastisitet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Samler testresultatene i en tabell</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>hetero_test <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Modell  =</span> <span class="fu">c</span>(<span class="st">"Log-lineær"</span>, <span class="st">"Kvadratisk"</span>, <span class="st">"Kubisk"</span>),</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">BP_p    =</span> <span class="fu">c</span>(bp_log<span class="sc">$</span>p.value,  bp_kvad<span class="sc">$</span>p.value,  bp_kub<span class="sc">$</span>p.value),</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">White_p =</span> <span class="fu">c</span>(wt_log<span class="sc">$</span>p.value,  wt_kvad<span class="sc">$</span>p.value,  wt_kub<span class="sc">$</span>p.value),</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Score_p =</span> <span class="fu">c</span>(sc_log<span class="sc">$</span>p,        sc_kvad<span class="sc">$</span>p,        sc_kub<span class="sc">$</span>p)</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>hetero_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Samler testresultatene i en tabell</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>hetero_test <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Modell  =</span> <span class="fu">c</span>(<span class="st">"Log-lineær"</span>, <span class="st">"Kvadratisk"</span>, <span class="st">"Kubisk"</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">BP_p    =</span> <span class="fu">c</span>(bp_log<span class="sc">$</span>p.value,  bp_kvad<span class="sc">$</span>p.value,  bp_kub<span class="sc">$</span>p.value),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">White_p =</span> <span class="fu">c</span>(wt_log<span class="sc">$</span>p.value,  wt_kvad<span class="sc">$</span>p.value,  wt_kub<span class="sc">$</span>p.value),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Score_p =</span> <span class="fu">c</span>(sc_log<span class="sc">$</span>p,        sc_kvad<span class="sc">$</span>p,        sc_kub<span class="sc">$</span>p)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>hetero_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
   Modell      BP_p White_p Score_p
@@ -1006,12 +882,7 @@ Table&nbsp;3: Resultater fra Breusch–Pagan-, White- og Score-testene for de tr
 </section>
 <section id="kausalitetsdiskusjon-200400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="kausalitetsdiskusjon-200400-ord">Kausalitetsdiskusjon (200–400 ord)</h2>
-<p>Selv om denne studien viser en statistisk sammenheng mellom økonomisk utvikling og inntektsulikhet, der utdanning, transport og demografi inngår som forklaringsvariabler, kan resultatene ikke tolkes som kausale.</p>
-<p>Det finnes flere grunner til dette. For det første kan det være omvendt kausalitet. Økonomisk vekst kan påvirke ulikhet, men ulikhet kan også påvirke vekst. For eksempel kan regioner med høy ulikhet ha lavere investeringer i utdanning, dårligere transportforhold og en skjev befolkningssammensetning, noe som kan redusere økonomisk utvikling. I dette tilfellet viser modellen en toveis sammenheng snarere enn en klar årsakssammenheng.</p>
-<p>For det andre kan modellen mangle viktige variabler. Selv om analysen inkluderer utdanning, veitetthet og andelen eldre, noe som gir modellen en viss forklaringskraft, mangler det fortsatt flere andre sentrale faktorer som blant annet institusjonskvalitet, arbeidsmarkedsforhold eller fordeling av kapital. Dersom slike faktorer påvirker både økonomisk vekst og ulikhet, kan resultatene bli skjeve på grunn av utelatte variabler.</p>
-<p>Et annet problem er samtidig påvirkning. Økonomisk vekst og inntektsulikhet kan påvirke hverandre i samme periode, og ikke bare i én retning. Når begge variablene endrer seg samtidig og påvirker hverandre, blir det vanskelig å skille hva som er årsak og hva som er virkning.</p>
-<p>For å identifisere kausale sammenhenger bedre, trengs mer presise analyser som kan kontrollere for regionale forhold som ikke endrer seg over tid, og dermed redusere problemet med utelatte variabler. Det er også mulig å bruke instrumentvariabler eller tidsforsinkede variabler for å redusere omvendt kausalitet og samtidig påvirkning. Flere kontrollvariabler eller lengre tidsserier kan i tillegg gjøre kausalanalysen mer pålitelig.</p>
-<p>Oppsummert viser analysen bare at det finnes en sammenheng mellom variablene, men ikke hva som er årsaken. For å si noe mer sikkert om årsakssammenhenger, trengs det mer grundige analyser som kan håndtere at viktige forhold kan mangle i modellen, eller at variablene kan påvirke hverandre.</p>
+<p>Selv om denne studien viser en statistisk sammenheng mellom økonomisk utvikling og inntektsulikhet, der utdanning, transport og demografi inngår som forklaringsvariabler, kan resultatene ikke tolkes som kausale. Det finnes flere grunner til dette. For det første kan det være omvendt kausalitet. Økonomisk vekst kan påvirke ulikhet, men ulikhet kan også påvirke vekst. For eksempel kan regioner med høy ulikhet ha lavere investeringer i utdanning, dårligere transportforhold og en skjev befolkningssammensetning, noe som kan redusere økonomisk utvikling. I dette tilfellet viser modellen en toveis sammenheng snarere enn en klar årsakssammenheng. For det andre kan modellen mangle viktige variabler. Selv om analysen inkluderer utdanning, veitetthet og andelen eldre, noe som gir modellen en viss forklaringskraft, mangler det fortsatt flere andre sentrale faktorer som blant annet institusjonskvalitet, arbeidsmarkedsforhold eller fordeling av kapital. Dersom slike faktorer påvirker både økonomisk vekst og ulikhet, kan resultatene bli skjeve på grunn av utelatte variabler. Et annet problem er samtidig påvirkning. Økonomisk vekst og inntektsulikhet kan påvirke hverandre i samme periode, og ikke bare i én retning. Når begge variablene endrer seg samtidig og påvirker hverandre, blir det vanskelig å skille hva som er årsak og hva som er virkning. For å identifisere kausale sammenhenger bedre, trengs mer presise analyser som kan kontrollere for regionale forhold som ikke endrer seg over tid, og dermed redusere problemet med utelatte variabler. Det er også mulig å bruke instrumentvariabler eller tidsforsinkede variabler for å redusere omvendt kausalitet og samtidig påvirkning. Flere kontrollvariabler eller lengre tidsserier kan i tillegg gjøre kausalanalysen mer pålitelig. Oppsummert viser analysen bare at det finnes en sammenheng mellom variablene, men ikke hva som er årsaken. For å si noe mer sikkert om årsakssammenhenger, trengs det mer grundige analyser som kan håndtere at viktige forhold kan mangle i modellen, eller at variablene kan påvirke hverandre.</p>
 </section>
 </section>
 <section id="del-d-panel" class="level1">
@@ -1021,119 +892,135 @@ Table&nbsp;3: Resultater fra Breusch–Pagan-, White- og Score-testene for de tr
 <section id="datainnsamling-for-panelestimering" class="level3">
 <h3 class="anchored" data-anchor-id="datainnsamling-for-panelestimering">Datainnsamling for Panelestimering</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Laster ned og filtrerer datasett for perioden 2008–2022</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Nedlasting av BNP 2008–2022</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>gdp_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"nama_10r_3gdp"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    unit <span class="sc">==</span> <span class="st">"MIO_EUR"</span>,</span>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Laster ned og filtrerer datasett for perioden 2008–2022</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Nedlasting av BNP 2008–2022</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>gdp_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"nama_10r_3gdp"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    unit <span class="sc">==</span> <span class="st">"MIO_EUR"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo) <span class="sc">==</span> <span class="dv">5</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, TIME_PERIOD, <span class="at">values_gdp =</span> values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+indexed 0B in  0s, 0B/s
+indexed 1.00TB in  0s, 56.72TB/s
+                                                                              </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nedlasting av befolkning 2008–2022</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>pop_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"demo_r_pjanaggr3"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">"T"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">==</span> <span class="st">"TOTAL"</span>,</span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo) <span class="sc">==</span> <span class="dv">5</span>,</span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, TIME_PERIOD, <span class="at">values_gdp =</span> values)</span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Nedlasting av befolkning 2008–2022</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>pop_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"demo_r_pjanaggr3"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">"T"</span>,</span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    age <span class="sc">==</span> <span class="st">"TOTAL"</span>,</span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo) <span class="sc">==</span> <span class="dv">5</span>,</span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, TIME_PERIOD, <span class="at">values_pop =</span> values)</span>
-<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Slå sammen</span></span>
-<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>gdp_pop_panel <span class="ot">&lt;-</span> gdp_panel <span class="sc">%&gt;%</span></span>
-<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo"</span>, <span class="st">"TIME_PERIOD"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">NUTS2 =</span> <span class="fu">substr</span>(geo, <span class="dv">1</span>, <span class="dv">4</span>),</span>
-<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">GDPC  =</span> values_gdp <span class="sc">*</span> <span class="fl">1e6</span> <span class="sc">/</span> values_pop</span>
-<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(values_pop <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">is.finite</span>(GDPC)) <span class="sc">%&gt;%</span></span>
-<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># beregnes årlig vekstrate i GDPC på NUTS2-nivå</span></span>
-<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(NUTS2) <span class="sc">%&gt;%</span></span>
-<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(TIME_PERIOD, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">change_GDPC_pct =</span> (GDPC <span class="sc">/</span> <span class="fu">lag</span>(GDPC) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># beregnes Gini på (NUTS2, TIME_PERIOD)-nivå, og oppsummeres direkte</span></span>
-<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(NUTS2, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
-<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted =</span> <span class="cf">if</span> (<span class="fu">n</span>() <span class="sc">&gt;=</span> <span class="dv">2</span>)</span>
-<span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gini.wtd</span>(GDPC, <span class="at">weights =</span> values_pop))</span>
-<span id="cb27-41"><a href="#cb27-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
-<span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a>      <span class="cn">NA_real_</span></span>
-<span id="cb27-43"><a href="#cb27-43" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb27-44"><a href="#cb27-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb27-45"><a href="#cb27-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">GDPC           =</span> <span class="fu">sum</span>(values_gdp <span class="sc">*</span> <span class="fl">1e6</span>) <span class="sc">/</span> <span class="fu">sum</span>(values_pop),  <span class="co"># Befolkningsvektet GDPC for NUTS2</span></span>
-<span id="cb27-46"><a href="#cb27-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">change_GDPC_pct =</span> <span class="fu">mean</span>(change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),      <span class="co"># Skal være identisk innen samme NUTS2-år</span></span>
-<span id="cb27-47"><a href="#cb27-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted   =</span> <span class="fu">mean</span>(Gini_weighted, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),        <span class="co"># Beholder NA, filtrerer ikke bort</span></span>
-<span id="cb27-48"><a href="#cb27-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb27-49"><a href="#cb27-49" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(geo, TIME_PERIOD, <span class="at">values_pop =</span> values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+indexed 0B in  0s, 0B/s
+indexed 1.00TB in  0s, 22.36TB/s
+                                                                              </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Slå sammen</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>gdp_pop_panel <span class="ot">&lt;-</span> gdp_panel <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"geo"</span>, <span class="st">"TIME_PERIOD"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">NUTS2 =</span> <span class="fu">substr</span>(geo, <span class="dv">1</span>, <span class="dv">4</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">GDPC  =</span> values_gdp <span class="sc">*</span> <span class="fl">1e6</span> <span class="sc">/</span> values_pop</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(values_pop <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="fu">is.finite</span>(GDPC)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># beregnes årlig vekstrate i GDPC på NUTS2-nivå</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(NUTS2) <span class="sc">%&gt;%</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(TIME_PERIOD, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">change_GDPC_pct =</span> (GDPC <span class="sc">/</span> <span class="fu">lag</span>(GDPC) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># beregnes Gini på (NUTS2, TIME_PERIOD)-nivå, og oppsummeres direkte</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(NUTS2, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted =</span> <span class="cf">if</span> (<span class="fu">n</span>() <span class="sc">&gt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.numeric</span>(<span class="fu">gini.wtd</span>(GDPC, <span class="at">weights =</span> values_pop))</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>      <span class="cn">NA_real_</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">GDPC           =</span> <span class="fu">sum</span>(values_gdp <span class="sc">*</span> <span class="fl">1e6</span>) <span class="sc">/</span> <span class="fu">sum</span>(values_pop),  <span class="co"># Befolkningsvektet GDPC for NUTS2</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">change_GDPC_pct =</span> <span class="fu">mean</span>(change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),      <span class="co"># Skal være identisk innen samme NUTS2-år</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted   =</span> <span class="fu">mean</span>(Gini_weighted, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),        <span class="co"># Beholder NA, filtrerer ikke bort</span></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># høy utdanning 2008–2022</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>edu_panel <span class="ot">&lt;-</span> utdanning <span class="sc">%&gt;%</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    sex<span class="sc">==</span><span class="st">"T"</span>, age<span class="sc">==</span><span class="st">"Y25-64"</span>, unit<span class="sc">==</span><span class="st">"PC"</span>,</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    isced11<span class="sc">==</span><span class="st">"ED5-8"</span>,</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo)<span class="sc">==</span><span class="dv">4</span>,</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">NUTS2 =</span> geo, TIME_PERIOD, Høy<span class="at">_utdanning =</span> values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># høy utdanning 2008–2022</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>edu_panel <span class="ot">&lt;-</span> utdanning <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    sex<span class="sc">==</span><span class="st">"T"</span>, age<span class="sc">==</span><span class="st">"Y25-64"</span>, unit<span class="sc">==</span><span class="st">"PC"</span>,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    isced11<span class="sc">==</span><span class="st">"ED5-8"</span>,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo)<span class="sc">==</span><span class="dv">4</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">NUTS2 =</span> geo, TIME_PERIOD, Høy<span class="at">_utdanning =</span> values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># population (andel over 65 år) 2008–2022</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>pop_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"demo_r_pjangrp3"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    sex<span class="sc">==</span><span class="st">"T"</span>,</span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo)<span class="sc">==</span><span class="dv">4</span>,</span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(geo, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop_over65 =</span> <span class="fu">sum</span>(values[age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Y65-69"</span>,<span class="st">"Y70-74"</span>,<span class="st">"Y75-79"</span>,<span class="st">"Y80-84"</span>,<span class="st">"Y85-89"</span>,<span class="st">"Y_GE85"</span>)]),</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop_total  =</span> <span class="fu">sum</span>(values[age<span class="sc">==</span><span class="st">"TOTAL"</span>]),</span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">andelen_over65 =</span> pop_over65<span class="sc">/</span>pop_total <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">NUTS2=</span>geo)<span class="sc">%&gt;%</span></span>
-<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(NUTS2, TIME_PERIOD, andelen_over65)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># population (andel over 65 år) 2008–2022</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>pop_panel <span class="ot">&lt;-</span> <span class="fu">get_eurostat</span>(<span class="st">"demo_r_pjangrp3"</span>, <span class="at">time_format=</span><span class="st">"num"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    TIME_PERIOD <span class="sc">%in%</span> <span class="dv">2008</span><span class="sc">:</span><span class="dv">2022</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    sex<span class="sc">==</span><span class="st">"T"</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nchar</span>(geo)<span class="sc">==</span><span class="dv">4</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">substr</span>(geo,<span class="dv">1</span>,<span class="dv">2</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"BE"</span>,<span class="st">"NL"</span>,<span class="st">"BG"</span>,<span class="st">"NO"</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(geo, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop_over65 =</span> <span class="fu">sum</span>(values[age <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Y65-69"</span>,<span class="st">"Y70-74"</span>,<span class="st">"Y75-79"</span>,<span class="st">"Y80-84"</span>,<span class="st">"Y85-89"</span>,<span class="st">"Y_GE85"</span>)]),</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">pop_total  =</span> <span class="fu">sum</span>(values[age<span class="sc">==</span><span class="st">"TOTAL"</span>]),</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">andelen_over65 =</span> pop_over65<span class="sc">/</span>pop_total <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">NUTS2=</span>geo)<span class="sc">%&gt;%</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(NUTS2, TIME_PERIOD, andelen_over65)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+indexed 0B in  0s, 0B/s
+indexed 1.00TB in  0s, 16.93TB/s
+                                                                              </code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kobler sammen datasett</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>panel_df <span class="ot">&lt;-</span> gdp_pop_panel <span class="sc">%&gt;%</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(edu_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kobler sammen datasett</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>panel_df <span class="ot">&lt;-</span> gdp_pop_panel <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(edu_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_panel, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="panelmodeller-fire-fe-spesifikasjoner" class="level3">
 <h3 class="anchored" data-anchor-id="panelmodeller-fire-fe-spesifikasjoner">Panelmodeller (Fire FE-spesifikasjoner)</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Oppretter landkode fra NUTS2 og aggregerer data til land × år</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>panel_country <span class="ot">&lt;-</span> panel_df <span class="sc">%&gt;%</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">substr</span>(NUTS2, <span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted   =</span> <span class="fu">mean</span>(Gini_weighted,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">change_GDPC_pct =</span> <span class="fu">mean</span>(change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    Høy<span class="at">_utdanning   =</span> <span class="fu">mean</span>(Høy_utdanning,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">andelen_over65  =</span> <span class="fu">mean</span>(andelen_over65,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>panel_country <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(panel_country, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"country"</span>, <span class="st">"TIME_PERIOD"</span>))</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 1: land-faste effekter</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>fe_country <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> Høy_utdanning <span class="sc">+</span> andelen_over65,</span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_country,</span>
-<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
-<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"individual"</span></span>
-<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_country)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Oppretter landkode fra NUTS2 og aggregerer data til land × år</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>panel_country <span class="ot">&lt;-</span> panel_df <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">substr</span>(NUTS2, <span class="dv">1</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country, TIME_PERIOD) <span class="sc">%&gt;%</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Gini_weighted   =</span> <span class="fu">mean</span>(Gini_weighted,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">change_GDPC_pct =</span> <span class="fu">mean</span>(change_GDPC_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    Høy<span class="at">_utdanning   =</span> <span class="fu">mean</span>(Høy_utdanning,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">andelen_over65  =</span> <span class="fu">mean</span>(andelen_over65,  <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>panel_country <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(panel_country, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"country"</span>, <span class="st">"TIME_PERIOD"</span>))</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 1: land-faste effekter</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>fe_country <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> Høy_utdanning <span class="sc">+</span> andelen_over65,</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_country,</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"individual"</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_country)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Oneway (individual) effect Within Model
 
@@ -1161,18 +1048,18 @@ F-statistic: 0.125676 on 2 and 29 DF, p-value: 0.88238</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Konverterer datasettet til et panelobjekt med NUTS2 som enhets-ID og TIME_PERIOD som tidsvariabel</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>panel_df <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(panel_df, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Konverterer datasettet til et panelobjekt med NUTS2 som enhets-ID og TIME_PERIOD som tidsvariabel</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>panel_df <span class="ot">&lt;-</span> <span class="fu">pdata.frame</span>(panel_df, <span class="at">index =</span> <span class="fu">c</span>(<span class="st">"NUTS2"</span>, <span class="st">"TIME_PERIOD"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 2: Faste effekter for år (year FE)</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>fe_year <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,   <span class="co"># pdata.frame med NUTS2 og år</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"time"</span>      <span class="co"># år som tids-FE</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 2: Faste effekter for år (year FE)</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>fe_year <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,   <span class="co"># pdata.frame med NUTS2 og år</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"time"</span>      <span class="co"># år som tids-FE</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Oneway (time) effect Within Model
 
@@ -1201,14 +1088,14 @@ F-statistic: 2.20176 on 2 and 193 DF, p-value: 0.11338</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 3: Faste effekter på NUTS2-nivå (region FE)</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>fe_region <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"individual"</span>    <span class="co"># individual = NUTS2-FE siden panelet er indeksert etter NUTS2</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 3: Faste effekter på NUTS2-nivå (region FE)</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>fe_region <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"individual"</span>    <span class="co"># individual = NUTS2-FE siden panelet er indeksert etter NUTS2</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Oneway (individual) effect Within Model
 
@@ -1235,14 +1122,14 @@ F-statistic: 0.346112 on 2 and 179 DF, p-value: 0.70791</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 4: Toveis faste effekter (NUTS2 + år)</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>fe_twoway <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,</span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"twoways"</span>  <span class="co"># kontrollerer både for NUTS2- og årsfaste effekter</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_twoway)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modell 4: Toveis faste effekter (NUTS2 + år)</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>fe_twoway <span class="ot">&lt;-</span> <span class="fu">plm</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  Gini_weighted <span class="sc">~</span> change_GDPC_pct <span class="sc">+</span> <span class="st">`</span><span class="at">Høy_utdanning</span><span class="st">`</span> <span class="sc">+</span> andelen_over65,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data   =</span> panel_df,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">model  =</span> <span class="st">"within"</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">effect =</span> <span class="st">"twoways"</span>  <span class="co"># kontrollerer både for NUTS2- og årsfaste effekter</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fe_twoway)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Twoways effects Within Model
 
@@ -1269,16 +1156,17 @@ F-statistic: 0.494183 on 2 and 171 DF, p-value: 0.61094</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Region FE"</span>   <span class="ot">=</span> fe_region,</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Year FE"</span>    <span class="ot">=</span> fe_year,</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Two-way FE"</span> <span class="ot">=</span> fe_twoway,</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Country FE"</span> <span class="ot">=</span> fe_country</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span> <span class="co"># Behold 5 desimaler</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Region FE"</span>   <span class="ot">=</span> fe_region,</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Year FE"</span>    <span class="ot">=</span> fe_year,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Two-way FE"</span> <span class="ot">=</span> fe_twoway,</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Country FE"</span> <span class="ot">=</span> fe_country</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stars =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">fmt =</span> <span class="dv">5</span>,</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"markdown"</span>   </span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-panel" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-panel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1286,136 +1174,103 @@ Table&nbsp;4: Sammenligning av panelmodeller
 </figcaption>
 <div aria-describedby="tbl-panel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<!-- preamble start -->
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 18%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Region FE</th>
+<th>Year FE</th>
+<th>Two-way FE</th>
+<th>Country FE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Høy_utdanning</td>
+<td>-0.00036</td>
+<td>0.00011</td>
+<td>-0.00035</td>
+<td>0.00041</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(0.00044)</td>
+<td>(0.00061)</td>
+<td>(0.00053)</td>
+<td>(0.00084)</td>
+</tr>
+<tr class="odd">
+<td>andelen_over65</td>
+<td>0.00048</td>
+<td>0.00315+</td>
+<td>0.00096</td>
+<td>-0.00055</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>(0.00088)</td>
+<td>(0.00185)</td>
+<td>(0.00125)</td>
+<td>(0.00155)</td>
+</tr>
+<tr class="odd">
+<td>Num.Obs.</td>
+<td>204</td>
+<td>204</td>
+<td>204</td>
+<td>35</td>
+</tr>
+<tr class="even">
+<td>R2</td>
+<td>0.004</td>
+<td>0.022</td>
+<td>0.006</td>
+<td>0.009</td>
+</tr>
+<tr class="odd">
+<td>R2 Adj.</td>
+<td>-0.130</td>
+<td>-0.028</td>
+<td>-0.180</td>
+<td>-0.162</td>
+</tr>
+<tr class="even">
+<td>AIC</td>
+<td>-1242.3</td>
+<td>-627.2</td>
+<td>-1259.9</td>
+<td>-247.4</td>
+</tr>
+<tr class="odd">
+<td>BIC</td>
+<td>-1232.3</td>
+<td>-617.3</td>
+<td>-1249.9</td>
+<td>-242.8</td>
+</tr>
+<tr class="even">
+<td>RMSE</td>
+<td>0.01</td>
+<td>0.05</td>
+<td>0.01</td>
+<td>0.01</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td colspan="5"><ul>
+<li>p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</li>
+</ul></td>
+</tr>
+</tfoot>
 
-    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
-
-    <script>
-      // Create table-specific functions using external factory
-      const tableFns_rkrmtbd96yra8zb2rblc = TinyTable.createTableFunctions("tinytable_rkrmtbd96yra8zb2rblc");
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: '10', j: 2 }, { i: '10', j: 3 }, { i: '10', j: 4 }, { i: '10', j: 5 } ], css_id: 'tinytable_css_khj8jwazg09lc1q4gvm6',}, 
-          { positions: [ { i: '4', j: 2 }, { i: '4', j: 3 }, { i: '4', j: 4 }, { i: '4', j: 5 } ], css_id: 'tinytable_css_t3732h4q5j6iuqgtavzs',}, 
-          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '5', j: 2 }, { i: '6', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '5', j: 3 }, { i: '6', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '5', j: 4 }, { i: '6', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '1', j: 5 }, { i: '2', j: 5 }, { i: '3', j: 5 }, { i: '5', j: 5 }, { i: '6', j: 5 }, { i: '7', j: 5 }, { i: '8', j: 5 }, { i: '9', j: 5 } ], css_id: 'tinytable_css_q0bwamfq0fbwg3se991q',}, 
-          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 } ], css_id: 'tinytable_css_qaiqrbt5kd1qkguan1w4',}, 
-          { positions: [ { i: '10', j: 1 } ], css_id: 'tinytable_css_pgbm4wf4ebtpvfipjo80',}, 
-          { positions: [ { i: '4', j: 1 } ], css_id: 'tinytable_css_759fgox80kew943lmzhp',}, 
-          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '5', j: 1 }, { i: '6', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 } ], css_id: 'tinytable_css_fo56xm12poee7ryqsqdd',}, 
-          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_tlm6copv8zqyh8ef51ae',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  tableFns_rkrmtbd96yra8zb2rblc.styleCell(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    </script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
-    <style>
-    /* tinytable css entries after */
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_khj8jwazg09lc1q4gvm6, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_khj8jwazg09lc1q4gvm6 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_t3732h4q5j6iuqgtavzs, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_t3732h4q5j6iuqgtavzs {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_q0bwamfq0fbwg3se991q, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_q0bwamfq0fbwg3se991q { text-align: center }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_qaiqrbt5kd1qkguan1w4, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_qaiqrbt5kd1qkguan1w4 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_pgbm4wf4ebtpvfipjo80, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_pgbm4wf4ebtpvfipjo80 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_759fgox80kew943lmzhp, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_759fgox80kew943lmzhp {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_fo56xm12poee7ryqsqdd, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_fo56xm12poee7ryqsqdd { text-align: left }
-    #tinytable_rkrmtbd96yra8zb2rblc td.tinytable_css_tlm6copv8zqyh8ef51ae, #tinytable_rkrmtbd96yra8zb2rblc th.tinytable_css_tlm6copv8zqyh8ef51ae {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    </style>
-    <div class="container">
-      <table class="tinytable" id="tinytable_rkrmtbd96yra8zb2rblc" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
-        
-        <thead>
-              <tr>
-                <th scope="col" data-row="0" data-col="1"> </th>
-                <th scope="col" data-row="0" data-col="2">Region FE</th>
-                <th scope="col" data-row="0" data-col="3">Year FE</th>
-                <th scope="col" data-row="0" data-col="4">Two-way FE</th>
-                <th scope="col" data-row="0" data-col="5">Country FE</th>
-              </tr>
-        </thead>
-        <tfoot><tr><td colspan="5">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr></tfoot>
-        <tbody>
-                <tr>
-                  <td data-row="1" data-col="1">Høy_utdanning</td>
-                  <td data-row="1" data-col="2">-0.00036</td>
-                  <td data-row="1" data-col="3">0.00011</td>
-                  <td data-row="1" data-col="4">-0.00035</td>
-                  <td data-row="1" data-col="5">0.00041</td>
-                </tr>
-                <tr>
-                  <td data-row="2" data-col="1"></td>
-                  <td data-row="2" data-col="2">(0.00044)</td>
-                  <td data-row="2" data-col="3">(0.00061)</td>
-                  <td data-row="2" data-col="4">(0.00053)</td>
-                  <td data-row="2" data-col="5">(0.00084)</td>
-                </tr>
-                <tr>
-                  <td data-row="3" data-col="1">andelen_over65</td>
-                  <td data-row="3" data-col="2">0.00048</td>
-                  <td data-row="3" data-col="3">0.00315+</td>
-                  <td data-row="3" data-col="4">0.00096</td>
-                  <td data-row="3" data-col="5">-0.00055</td>
-                </tr>
-                <tr>
-                  <td data-row="4" data-col="1"></td>
-                  <td data-row="4" data-col="2">(0.00088)</td>
-                  <td data-row="4" data-col="3">(0.00185)</td>
-                  <td data-row="4" data-col="4">(0.00125)</td>
-                  <td data-row="4" data-col="5">(0.00155)</td>
-                </tr>
-                <tr>
-                  <td data-row="5" data-col="1">Num.Obs.</td>
-                  <td data-row="5" data-col="2">204</td>
-                  <td data-row="5" data-col="3">204</td>
-                  <td data-row="5" data-col="4">204</td>
-                  <td data-row="5" data-col="5">35</td>
-                </tr>
-                <tr>
-                  <td data-row="6" data-col="1">R2</td>
-                  <td data-row="6" data-col="2">0.004</td>
-                  <td data-row="6" data-col="3">0.022</td>
-                  <td data-row="6" data-col="4">0.006</td>
-                  <td data-row="6" data-col="5">0.009</td>
-                </tr>
-                <tr>
-                  <td data-row="7" data-col="1">R2 Adj.</td>
-                  <td data-row="7" data-col="2">-0.130</td>
-                  <td data-row="7" data-col="3">-0.028</td>
-                  <td data-row="7" data-col="4">-0.180</td>
-                  <td data-row="7" data-col="5">-0.162</td>
-                </tr>
-                <tr>
-                  <td data-row="8" data-col="1">AIC</td>
-                  <td data-row="8" data-col="2">-1242.3</td>
-                  <td data-row="8" data-col="3">-627.2</td>
-                  <td data-row="8" data-col="4">-1259.9</td>
-                  <td data-row="8" data-col="5">-247.4</td>
-                </tr>
-                <tr>
-                  <td data-row="9" data-col="1">BIC</td>
-                  <td data-row="9" data-col="2">-1232.3</td>
-                  <td data-row="9" data-col="3">-617.3</td>
-                  <td data-row="9" data-col="4">-1249.9</td>
-                  <td data-row="9" data-col="5">-242.8</td>
-                </tr>
-                <tr>
-                  <td data-row="10" data-col="1">RMSE</td>
-                  <td data-row="10" data-col="2">0.01</td>
-                  <td data-row="10" data-col="3">0.05</td>
-                  <td data-row="10" data-col="4">0.01</td>
-                  <td data-row="10" data-col="5">0.01</td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-<!-- hack to avoid NA insertion in last line -->
+</table>
 </div>
 </div>
 </figure>
@@ -1425,18 +1280,12 @@ Table&nbsp;4: Sammenligning av panelmodeller
 </section>
 <section id="panelestimeringsanalyse-opptil-400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="panelestimeringsanalyse-opptil-400-ord">Panelestimeringsanalyse: (opptil 400 ord)</h2>
-<p>I panelmodellen inkluderte jeg ikke transportinfrastruktur (veitetthet). Selv om variabelen endrer seg over tid, er endringen så liten at den i praksis er tidsinvariant. En faste-effekt-modell estimerer kun basert på tidsvariasjon innen samme region, og tidsinvariante variabler blir fullstendig absorbert av regionsfaste effekter. Dermed kan ikke veitetthet estimeres på en korrekt måte og er utelatt fra panelanalysen. I stedet inkluderes kun høyere utdanning og andelen av befolkningen over 65 år.</p>
-<p>Som vist i <a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a> har alle fire modellene svært svak forklaringskraft, med R²-verdier på henholdsvis 0.004, 0.022, 0.006 og 0.009, og de justerte R²-verdiene er negative. Dette indikerer at modellene i liten grad klarer å forklare utviklingen i regional inntektsulikhet over tid.</p>
-<p>Videre er koeffisientene for de inkluderte variablene svært små og gjennomgående ikke-signifikante. For utdanningsnivået er p-verdiene i alle modellene klart over 0.1, blant annet p 0.41 (region FE), 0.86 (year FE), 0.51 (two-way FE) og 0.62 (country FE). Andelen eldre har også p-verdier over 0.1 i de fleste modellene, som p 0.59 (region FE)), 0.45 (two-way FE) og 0.78 (country FE), med unntak av year FE-modellen der variabelen er svakt signifikant (p 0.0889). Dette viser at disse variablene endrer seg svært lite over tid innen hver region, og derfor ikke klarer å forklare variasjonen i Gini-koeffisienten.</p>
-<p>Samlet sett viser panelresultatene at de tidsmessige endringene innen regionene er begrenset. Både Gini, utdanningsnivå og aldersstruktur er forholdsvis stabile, noe som gjør det utfordrende for modellen å identifisere tydelige tidseffekter. Dette samsvarer med de lave R²-verdiene og manglende signifikans i <a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a>, og tyder på at regionale ulikheter i større grad skyldes langsiktige strukturelle forskjeller enn kortsiktige endringer.</p>
+<p>I panelmodellen inkluderte jeg ikke transportinfrastruktur (veitetthet). Selv om variabelen endrer seg over tid, er endringen så liten at den i praksis er tidsinvariant. En faste-effekt-modell estimerer kun basert på tidsvariasjon innen samme region, og tidsinvariante variabler blir fullstendig absorbert av regionsfaste effekter. Dermed kan ikke veitetthet estimeres på en korrekt måte og er utelatt fra panelanalysen. I stedet inkluderes kun høyere utdanning og andelen av befolkningen over 65 år. Som vist i <a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a> har alle fire modellene svært svak forklaringskraft, med R²-verdier på henholdsvis 0.004, 0.022, 0.006 og 0.009, og de justerte R²-verdiene er negative. Dette indikerer at modellene i liten grad klarer å forklare utviklingen i regional inntektsulikhet over tid.<br>
+Videre er koeffisientene for de inkluderte variablene svært små og gjennomgående ikke-signifikante. For utdanningsnivået er p-verdiene i alle modellene klart over 0.1, blant annet p 0.41 (region FE), 0.86 (year FE), 0.51 (two-way FE) og 0.62 (country FE). Andelen eldre har også p-verdier over 0.1 i de fleste modellene, som p 0.59 (region FE)), 0.45 (two-way FE) og 0.78 (country FE), med unntak av year FE-modellen der variabelen er svakt signifikant (p 0.0889). Dette viser at disse variablene endrer seg svært lite over tid innen hver region, og derfor ikke klarer å forklare variasjonen i Gini-koeffisienten. Samlet sett viser panelresultatene at de tidsmessige endringene innen regionene er begrenset. Både Gini, utdanningsnivå og aldersstruktur er forholdsvis stabile, noe som gjør det utfordrende for modellen å identifisere tydelige tidseffekter. Dette samsvarer med de lave R²-verdiene og manglende signifikans i <a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a>, og tyder på at regionale ulikheter i større grad skyldes langsiktige strukturelle forskjeller enn kortsiktige endringer.</p>
 </section>
 <section id="panelestimeringsdiskusjon-opptil-400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="panelestimeringsdiskusjon-opptil-400-ord">Panelestimeringsdiskusjon: (opptil 400 ord)</h2>
-<p>Basert på de samlede panelestimatene fremstår modellens forklaringskraft som svak. Dette henger i stor grad sammen med den begrensede tidsvariasjonen i variablene samt egenskapene ved FE modeller, som benytter endringer over tid innen samme region til å identifisere effekter.</p>
-<p>Transportinfrastruktur (veitetthet) er også en relevant forklaringsfaktor, men ble ikke inkludert i panelmodellen på grunn av modellens metodiske begrensninger. Veitetthet er i praksis en tidsinvariant variabel i analyseperioden og vil derfor bli fullstendig absorbert av regionsfaste effekter. Dermed kan den ikke estimeres i en faste-effekt-modell. Dette innebærer at en potensielt viktig forklaringsvariabel faller bort, noe som ytterligere begrenser modellens totale forklaringskraft.</p>
-<p><a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a> viser tydelig at modellens forklaringskraft er svært svak. I en modell med faste effekter er identifikasjonen basert på endringer over tid innenfor samme region. I dette datasettet endrer imidlertid Gini, utdanningsnivå og andelen eldre over 65 år seg svært lite i perioden 2008–2022. Fordi variablene nesten ikke varierer, har modellen svært begrenset tidsvariasjon å utnytte. Derfor blir koeffisientene meget små, for eksempel er den laveste koeffisienten for utdanning –0.00036 og for andelen eldre –0.00055, mens den laveste R²-verdien er helt nede på 0.004. Dette viser at modellen i liten grad klarer å forklare endringer over tid.</p>
-<p>I toveis faste effekter (Two-way FE) blir mønsteret enda tydeligere. Denne modellen kontrollerer både for regionspesifikke forskjeller og årsspesifikke sjokk, noe som gjør at enda mindre tidsvariasjon står igjen til å forklare endringer i ulikhet. I toveis faste effekter (Two-way FE) er p-verdiene høye: 0.5141 for utdanningsnivå og 0.4457 for andelen eldre. Begge ligger langt over 0.1, noe som viser at disse variablene ikke har noen tydelig statistisk effekt innen regionene over tid.</p>
-<p>Samlet sett viser dette at regionale ulikheter i større grad skyldes stabile og langsiktige strukturelle forhold, og at kortsiktige endringer i utdanning, demografi og økonomisk utvikling spiller en svært begrenset rolle for utviklingen i Gini-koeffisienten i denne perioden.</p>
+<p>Basert på de samlede panelestimatene fremstår modellens forklaringskraft som svak. Dette henger i stor grad sammen med den begrensede tidsvariasjonen i variablene samt egenskapene ved FE modeller, som benytter endringer over tid innen samme region til å identifisere effekter. Transportinfrastruktur (veitetthet) er også en relevant forklaringsfaktor, men ble ikke inkludert i panelmodellen på grunn av modellens metodiske begrensninger. Veitetthet er i praksis en tidsinvariant variabel i analyseperioden og vil derfor bli fullstendig absorbert av regionsfaste effekter. Dermed kan den ikke estimeres i en faste-effekt-modell. Dette innebærer at en potensielt viktig forklaringsvariabel faller bort, noe som ytterligere begrenser modellens totale forklaringskraft. <a href="#tbl-panel" class="quarto-xref">Table&nbsp;4</a> viser tydelig at modellens forklaringskraft er svært svak. I en modell med faste effekter er identifikasjonen basert på endringer over tid innenfor samme region. I dette datasettet endrer imidlertid Gini, utdanningsnivå og andelen eldre over 65 år seg svært lite i perioden 2008–2022. Fordi variablene nesten ikke varierer, har modellen svært begrenset tidsvariasjon å utnytte. Derfor blir koeffisientene meget små, for eksempel er den laveste koeffisienten for utdanning –0.00036 og for andelen eldre –0.00055, mens den laveste R²-verdien er helt nede på 0.004. Dette viser at modellen i liten grad klarer å forklare endringer over tid. I toveis faste effekter (Two-way FE) blir mønsteret enda tydeligere. Denne modellen kontrollerer både for regionspesifikke forskjeller og årsspesifikke sjokk, noe som gjør at enda mindre tidsvariasjon står igjen til å forklare endringer i ulikhet. I toveis faste effekter (Two-way FE) er p-verdiene høye: 0.5141 for utdanningsnivå og 0.4457 for andelen eldre. Begge ligger langt over 0.1, noe som viser at disse variablene ikke har noen tydelig statistisk effekt innen regionene over tid. Samlet sett viser dette at regionale ulikheter i større grad skyldes stabile og langsiktige strukturelle forhold, og at kortsiktige endringer i utdanning, demografi og økonomisk utvikling spiller en svært begrenset rolle for utviklingen i Gini-koeffisienten i denne perioden.</p>
 </section>
 </section>
 <section id="del-e-dokumenter-din-bruk-av-ki" class="level1">
