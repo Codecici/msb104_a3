@@ -158,7 +158,7 @@ div.csl-indent {
 <div class="cell-output cell-output-stdout">
 <pre><code>
 indexed 0B in  0s, 0B/s
-indexed 1.00TB in  0s, 50.20TB/s
+indexed 1.00TB in  0s, 46.90TB/s
                                                                               </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrerer utdanningsdata for 2017 og grupperer regionene etter lav, middels og høy utdanning</span></span>
@@ -770,7 +770,7 @@ Table&nbsp;2: logaritmiske, kvadratiske, kubiske
 </div>
 <section id="begrunn-valgene-mine" class="level3">
 <h3 class="anchored" data-anchor-id="begrunn-valgene-mine">Begrunn valgene mine</h3>
-<p>Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes teoretisk av Kuznets-hypotesen <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og deretter reduseres med økonomisk utvikling. Resultatene støttes av artikkelen <span class="citation" data-cites="LESSMANN2017110">Lessmann and Seidel (<a href="#ref-LESSMANN2017110" role="doc-biblioref">2017</a>)</span>, om fant at ulikhet først øker og deretter avtar med økonomisk utvikling, og viser en N-formet sammenheng, noe som tilsvarer den klassiske Kuznets-kurven <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>.</p>
+<p>Blant de tre funksjonelle formene gir både den log-lineære og den kvadratiske modellen en bedre tilpasning enn den lineære modellen. Den log-lineære modellen har lavest AIC (−76.77), mens den kvadratiske har høyest justert R² (0.528), slik resultatene i tabell <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser. Jo høyere R², desto bedre; jo lavere AIC, desto bedre. Begge modellene gir dermed en bedre empirisk forklaring på sammenhengen mellom økonomisk utvikling og ulikhet, noe som også støttes <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og deretter reduseres med økonomisk utvikling. Resultatene støttes av artikkelen <span class="citation" data-cites="LESSMANN2017110">Lessmann and Seidel (<a href="#ref-LESSMANN2017110" role="doc-biblioref">2017</a>)</span>, om fant at ulikhet først øker og deretter avtar med økonomisk utvikling, og viser en N-formet sammenheng, noe som tilsvarer <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>.</p>
 </section>
 </section>
 <section id="visualisering" class="level2">
@@ -827,7 +827,7 @@ Figure&nbsp;1: Visualisering av log-lineær og kvadratisk modell for sammenhenge
 </section>
 <section id="tolkning-av-resultater-opp-til-400-ord" class="level2">
 <h2 class="anchored" data-anchor-id="tolkning-av-resultater-opp-til-400-ord">Tolkning av resultater (opp til 400 ord)</h2>
-<p>Resultatene fra <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528). I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer. Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som en svak Kuznets-lignende kurve <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og senere flater ut. Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt. Samlet sett peker resultatene mot en ikke-lineære utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.</p>
+<p>Resultatene fra <a href="#tbl-funksjonsformer" class="quarto-xref">Table&nbsp;2</a> viser at den log-lineære og den kvadratiske modellen er mer overbevisende enn den kubiske modellen. Den log-lineære modellen har den laveste AIC-verdien (–76.77), mens den kvadratiske modellen har den høyeste justerte R² (0.528). I den log-lineære modellen er koeffisienten til log(change_GDPC_pct + 1) positiv og signifikant (Estimate = 0.0827, p = 0.030). Dette innebærer at inntektsulikheten øker når BNP-veksten stiger, men at effekten avtar ved høyere vekstnivåer. Den kvadratiske modellen viser også en ikke-lineær sammenheng. Førsteordensleddet er positivt og signifikant (Estimate = 0.03697, p = 0.049), mens andreordensleddet er negativt (Estimate = –0.0019996, p = 0.140). Selv om det sistnevnte ikke er signifikant, antyder retningen at økningen i ulikhet avtar ved høyere vekstnivåer. Dette kan tolkes som <span class="citation" data-cites="kuznets2019economic">Kuznets (<a href="#ref-kuznets2019economic" role="doc-biblioref">2019</a>)</span>, der ulikheten først øker og senere flater ut. Den kubiske modellen gir derimot ingen forbedring. R² og AIC er svakere enn i de to andre modellene, og modellen tilfører dermed ikke ytterligere innsikt. Samlet sett peker resultatene mot en ikke-lineære utvikling der økonomisk vekst øker inntektsulikheten, men hvor effekten gradvis svekkes. Den log-lineære og den kvadratiske modellen fanger dette mønsteret best.</p>
 </section>
 </section>
 <section id="del-c-heteroskedastisitetstesting-og-kausalitetsdiskusjon" class="level1">
@@ -905,7 +905,7 @@ Table&nbsp;3: Resultater fra Breusch–Pagan-, White- og Score-testene for de tr
 <div class="cell-output cell-output-stdout">
 <pre><code>
 indexed 0B in  0s, 0B/s
-indexed 1.00TB in  0s, 56.72TB/s
+indexed 1.00TB in  0s, 54.15TB/s
                                                                               </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nedlasting av befolkning 2008–2022</span></span>
@@ -921,7 +921,7 @@ indexed 1.00TB in  0s, 56.72TB/s
 <div class="cell-output cell-output-stdout">
 <pre><code>
 indexed 0B in  0s, 0B/s
-indexed 1.00TB in  0s, 22.36TB/s
+indexed 1.00TB in  0s, 24.32TB/s
                                                                               </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Slå sammen</span></span>
@@ -985,7 +985,7 @@ indexed 1.00TB in  0s, 22.36TB/s
 <div class="cell-output cell-output-stdout">
 <pre><code>
 indexed 0B in  0s, 0B/s
-indexed 1.00TB in  0s, 16.93TB/s
+indexed 1.00TB in  0s, 16.96TB/s
                                                                               </code></pre>
 </div>
 </div>
